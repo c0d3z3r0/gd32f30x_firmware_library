@@ -1,6 +1,6 @@
 /*!
-    \file  readme.txt
-    \brief description of the master and slave fullduplex communication use polling demo
+    \file  usbd_conf.h
+    \brief usb device driver basic configuration
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
@@ -36,11 +36,44 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This example is based on the GD32307C-EVAL-V1.1 board, it shows SPI0 and SPI2 fullduplex
-communication use polling mode.After the communicate is complete,if receive data equal 
-to send data, led2 and led3 turn on. If not, led2 and led3 turn off.
+#ifndef USBD_CONF_H
+#define USBD_CONF_H
 
-  Connect SPI0 NSS  PIN(PA3) to SPI2 NSS  PIN(PA4).
-  Connect SPI0 SCK  PIN(PA5) to SPI2 SCK  PIN(PC10).
-  Connect SPI0 MISO PIN(PA6) to SPI2 MISO PIN(PC11).
-  Connect SPI0 MOSI PIN(PA7) to SPI2 MOSI PIN(PC12).
+#include "gd32f30x.h"
+#include "gd32f303e_eval.h"
+
+
+#define USBD_CFG_MAX_NUM                   1U
+#define USBD_ITF_MAX_NUM                   4U
+
+/* define if low power mode is enabled; it allows entering the device into DEEP_SLEEP mode
+   following USB suspend event and wakes up after the USB wakeup event is received. */
+//#define USB_DEVICE_LOW_PWR_MODE_SUPPORT
+
+/* USB feature -- Self Powered */
+/* #define USBD_SELF_POWERED */
+
+/* endpoint count used by the CDC ACM device */
+#define CDC_ACM0_CMD_EP                     EP3_IN
+#define CDC_ACM0_DATA_IN_EP                 EP1_IN
+#define CDC_ACM0_DATA_OUT_EP                EP1_OUT
+
+#define CDC_ACM1_CMD_EP                     EP4_IN
+#define CDC_ACM1_DATA_IN_EP                 EP2_IN
+#define CDC_ACM1_DATA_OUT_EP                EP2_OUT
+
+#define CDC_ACM_CMD_PACKET_SIZE            8U
+#define CDC_ACM_DATA_PACKET_SIZE           64U
+
+/* endpoint count used by the CDC ACM device */
+#define EP_COUNT                           (5U)
+#define USB_STRING_COUNT                   4
+
+/* base address of the allocation buffer, used for buffer descriptor table and packet memory */
+#define BUFFER_ADDRESS                     (0x0000U)
+
+#define USB_PULLUP                         GPIOD
+#define USB_PULLUP_PIN                     GPIO_PIN_13
+#define RCC_AHBPeriph_GPIO_PULLUP          RCU_GPIOD
+
+#endif /* USBD_CONF_H */

@@ -1,6 +1,6 @@
 /*!
-    \file  readme.txt
-    \brief description of the master and slave fullduplex communication use polling demo
+    \file  usb_delay.h
+    \brief usb delay driver header file
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
@@ -36,11 +36,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This example is based on the GD32307C-EVAL-V1.1 board, it shows SPI0 and SPI2 fullduplex
-communication use polling mode.After the communicate is complete,if receive data equal 
-to send data, led2 and led3 turn on. If not, led2 and led3 turn off.
+#ifndef USB_DELAY_H
+#define USB_DELAY_H
 
-  Connect SPI0 NSS  PIN(PA3) to SPI2 NSS  PIN(PA4).
-  Connect SPI0 SCK  PIN(PA5) to SPI2 SCK  PIN(PC10).
-  Connect SPI0 MISO PIN(PA6) to SPI2 MISO PIN(PC11).
-  Connect SPI0 MOSI PIN(PA7) to SPI2 MOSI PIN(PC12).
+#include "usb_core.h"
+
+#define TIM_MSEC_DELAY                          0x01
+#define TIM_USEC_DELAY                          0x02
+
+/* function declarations */
+void timer_nvic_init(void);
+void delay_us(uint32_t time_us);
+void delay_ms(uint32_t time_ms);
+void timer_delay_irq (void);
+
+#endif /* USB_DELAY_H */

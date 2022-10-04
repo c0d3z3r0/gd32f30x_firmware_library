@@ -1,6 +1,6 @@
 /*!
-    \file  readme.txt
-    \brief description of the master and slave fullduplex communication use polling demo
+    \file  gd32f30x_libopt.h
+    \brief library optional for gd32f30x
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
@@ -36,11 +36,32 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This example is based on the GD32307C-EVAL-V1.1 board, it shows SPI0 and SPI2 fullduplex
-communication use polling mode.After the communicate is complete,if receive data equal 
-to send data, led2 and led3 turn on. If not, led2 and led3 turn off.
+#ifndef GD32F30X_LIBOPT_H
+#define GD32F30X_LIBOPT_H
 
-  Connect SPI0 NSS  PIN(PA3) to SPI2 NSS  PIN(PA4).
-  Connect SPI0 SCK  PIN(PA5) to SPI2 SCK  PIN(PC10).
-  Connect SPI0 MISO PIN(PA6) to SPI2 MISO PIN(PC11).
-  Connect SPI0 MOSI PIN(PA7) to SPI2 MOSI PIN(PC12).
+#include "gd32f30x_rcu.h"
+#include "gd32f30x_adc.h"
+#include "gd32f30x_can.h"
+#include "gd32f30x_crc.h"
+#include "gd32f30x_ctc.h"
+#include "gd32f30x_dac.h"
+#include "gd32f30x_dbg.h"
+#include "gd32f30x_dma.h"
+#include "gd32f30x_exti.h"
+#include "gd32f30x_fmc.h"
+#include "gd32f30x_fwdgt.h"
+#include "gd32f30x_gpio.h"
+#include "gd32f30x_i2c.h"
+#include "gd32f30x_pmu.h"
+#include "gd32f30x_bkp.h"
+#include "gd32f30x_rtc.h"
+#include "gd32f30x_sdio.h"
+#include "gd32f30x_spi.h"
+#include "gd32f30x_timer.h"
+#include "gd32f30x_usart.h"
+#include "gd32f30x_wwdgt.h"
+#include "gd32f30x_misc.h"
+#include "gd32f30x_enet.h"
+#include "gd32f30x_exmc.h"
+
+#endif /* GD32F30X_LIBOPT_H */

@@ -38,6 +38,8 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x_spi.h"
 
+#define SPI_ERROR_HANDLE(s)           do{}while(1)
+
 /* SPI/I2S parameter initialization mask */
 #define SPI_INIT_MASK                   ((uint32_t)0x00003040U)  /*!< SPI parameter initialization mask */
 #define I2S_INIT_MASK                   ((uint32_t)0x0000F047U)  /*!< I2S parameter initialization mask */
@@ -243,6 +245,10 @@ void i2s_psc_config(uint32_t spi_periph, uint32_t i2s_audiosample, uint32_t i2s_
     uint32_t pll2mf_4 = 0U;
 #endif /* GD32F30X_CL */
     
+     /* judge whether the audiosample is 0 */
+    if(0U == i2s_audiosample){
+        SPI_ERROR_HANDLE("the parameter can not be 0 \r\n");
+    }
     /* deinit SPI_I2SPSC register */
     SPI_I2SPSC(spi_periph) = SPI_I2SPSC_DEFAULT_VALUE;
 

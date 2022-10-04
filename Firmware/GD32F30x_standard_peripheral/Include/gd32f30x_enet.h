@@ -40,7 +40,6 @@ OF SUCH DAMAGE.
 #define GD32F30X_ENET_H
 
 #include "gd32f30x.h"
-#include <stdlib.h>
 
 #define IF_USE_EXTERNPHY_LIB             0
 #if (1 == IF_USE_EXTERNPHY_LIB)
@@ -1487,7 +1486,7 @@ ErrStatus enet_frame_transmit(uint8_t *buffer, uint32_t length);
 /* handle current transmit frame but without data copy from application buffer */
 #define ENET_NOCOPY_FRAME_TRANSMIT(len)     enet_frame_transmit(NULL, (len))
 /* configure the transmit IP frame checksum offload calculation and insertion */
-void enet_transmit_checksum_config(enet_descriptors_struct *desc, uint32_t checksum);
+ErrStatus enet_transmit_checksum_config(enet_descriptors_struct *desc, uint32_t checksum);
 /* ENET Tx and Rx function enable (include MAC and DMA module) */
 void enet_enable(void);   
 /* ENET Tx and Rx function disable (include MAC and DMA module) */
@@ -1495,7 +1494,7 @@ void enet_disable(void);
 /* configure MAC address */
 void enet_mac_address_set(enet_macaddress_enum mac_addr, uint8_t paddr[]);
 /* get MAC address */   
-void enet_mac_address_get(enet_macaddress_enum mac_addr, uint8_t paddr[]);
+ErrStatus enet_mac_address_get(enet_macaddress_enum mac_addr, uint8_t paddr[], uint8_t bufsize);
 
 /* get the ENET MAC/MSC/PTP/DMA status flag */
 FlagStatus enet_flag_get(enet_flag_enum enet_flag);

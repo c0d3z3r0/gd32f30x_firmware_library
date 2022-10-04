@@ -37,6 +37,7 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f30x_enet.h"
+#include <stdlib.h>
 
 #ifdef GD32F30X_CL
 
@@ -1005,12 +1006,17 @@ ErrStatus enet_frame_transmit(uint8_t *buffer, uint32_t length)
       \arg        ENET_CHECKSUM_TCPUDPICMP_SEGMENT: TCP/UDP/ICMP checksum insertion calculated but pseudo-header
       \arg        ENET_CHECKSUM_TCPUDPICMP_FULL: TCP/UDP/ICMP checksum insertion fully calculated
     \param[out] none
-    \retval     none
+    \retval     ErrStatus: ERROR, SUCCESS
 */
-void enet_transmit_checksum_config(enet_descriptors_struct *desc, uint32_t checksum)
+ErrStatus enet_transmit_checksum_config(enet_descriptors_struct *desc, uint32_t checksum)
 {
-    desc->status &= ~ENET_TDES0_CM;
-    desc->status |= checksum;
+    if(NULL != desc){
+        desc->status &= ~ENET_TDES0_CM;
+        desc->status |= checksum;
+        return SUCCESS;
+    }else{
+        return ERROR;
+    }   
 }
 
 /*!
@@ -1066,16 +1072,22 @@ void enet_mac_address_set(enet_macaddress_enum mac_addr, uint8_t paddr[])
       \arg        ENET_MAC_ADDRESS3: get MAC address 3 filter
     \param[out] paddr: the buffer pointer which is stored the MAC address
                   (little-ending store, such as mac address is aa:bb:cc:dd:ee:22, the buffer is {22, ee, dd, cc, bb, aa}) 
-    \retval     none
+    \param[in]  bufsize: refer to the size of the buffer which stores the MAC address
+      \arg        6 - 255
+    \retval     ErrStatus: ERROR, SUCCESS
 */                                   
-void enet_mac_address_get(enet_macaddress_enum mac_addr, uint8_t paddr[])
+ErrStatus enet_mac_address_get(enet_macaddress_enum mac_addr, uint8_t paddr[], uint8_t bufsize)
 {
+    if(bufsize < 6U){
+        return ERROR;
+    }
     paddr[0] = ENET_GET_MACADDR(mac_addr, 0U);
     paddr[1] = ENET_GET_MACADDR(mac_addr, 1U);
     paddr[2] = ENET_GET_MACADDR(mac_addr, 2U);
     paddr[3] = ENET_GET_MACADDR(mac_addr, 3U);
     paddr[4] = ENET_GET_MACADDR(mac_addr, 4U);
     paddr[5] = ENET_GET_MACADDR(mac_addr, 5U);
+    return SUCCESS;
 }
 
 /*!

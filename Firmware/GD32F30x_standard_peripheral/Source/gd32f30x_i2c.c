@@ -39,6 +39,8 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x_i2c.h"
 
+#define I2C_ERROR_HANDLE(s)           do{}while(1)
+
 #define I2CCLK_MAX                    ((uint32_t)0x0000003CU)             /*!< i2cclk maximum value */
 #define I2CCLK_MIN                    ((uint32_t)0x00000002U)             /*!< i2cclk minimum value */
 #define I2C_FLAG_MASK                 ((uint32_t)0x0000FFFFU)             /*!< i2c flag mask */
@@ -89,6 +91,11 @@ void i2c_clock_config(uint32_t i2c_periph, uint32_t clkspeed, uint32_t dutycyc)
     uint32_t pclk1, clkc, freq, risetime;
     uint32_t temp;
     
+    /* check the clkspeed value */
+    if(0U == clkspeed){
+        I2C_ERROR_HANDLE("the parameter can not be 0 \r\n");
+    }
+    
     pclk1 = rcu_clock_freq_get(CK_APB1);
     /* I2C peripheral clock frequency */
     freq = (uint32_t)(pclk1/1000000U);
@@ -111,7 +118,7 @@ void i2c_clock_config(uint32_t i2c_periph, uint32_t clkspeed, uint32_t dutycyc)
         }else{
             I2C_RT(i2c_periph) = risetime;
         }
-        clkc = (uint32_t)(pclk1/(clkspeed*2U)); 
+        clkc = (uint32_t)(pclk1/(clkspeed*2U));
         if(clkc < 0x04U){
             /* the CLKC in standard mode minmum value is 4 */
             clkc = 0x04U;

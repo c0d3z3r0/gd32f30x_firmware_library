@@ -412,12 +412,12 @@ void adc_inserted_channel_config(uint32_t adc_periph , uint8_t rank , uint8_t ad
 {
     uint8_t inserted_length;
     uint32_t isq,sampt;
-
+    
     inserted_length = (uint8_t)GET_BITS(ADC_ISQ(adc_periph) , 20U , 21U);
-  
+    
     isq = ADC_ISQ(adc_periph);
-    isq &= ~((uint32_t)(ADC_ISQ_ISQN << (15U-(inserted_length-rank)*5U)));
-    isq |= ((uint32_t)adc_channel << (15U-(inserted_length-rank)*5U));
+    isq &= ~((uint32_t)(ADC_ISQ_ISQN << (5U * ((3 + rank) - inserted_length))));
+    isq |= ((uint32_t)adc_channel << (5U * ((3 + rank) - inserted_length)));
     ADC_ISQ(adc_periph) = isq;
 
     /* ADC sampling time config */  

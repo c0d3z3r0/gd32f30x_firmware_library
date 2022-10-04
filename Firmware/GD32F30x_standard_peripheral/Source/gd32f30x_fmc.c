@@ -234,6 +234,9 @@ fmc_state_enum fmc_mass_erase(void)
             FMC_CTL0 |= FMC_CTL0_START;
             /* wait for the FMC ready */
             fmc_state = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
+            if(FMC_READY != fmc_state){
+                return fmc_state;
+            }
             /* reset the MER bit */
             FMC_CTL0 &= ~FMC_CTL0_MER;
         }
@@ -249,7 +252,6 @@ fmc_state_enum fmc_mass_erase(void)
         }
     }else{
         fmc_state = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
-  
         if(FMC_READY == fmc_state){
             /* start whole chip erase */
             FMC_CTL0 |= FMC_CTL0_MER;
