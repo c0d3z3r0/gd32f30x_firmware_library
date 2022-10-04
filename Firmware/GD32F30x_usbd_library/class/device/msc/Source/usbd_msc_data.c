@@ -1,8 +1,9 @@
 /*!
-    \file    app.c
-    \brief   USB main routine for Audio device
+    \file    msc_bbb_scsi.h
+    \brief   the header file of the msc_bbb_scsi.c
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2021-02-20, V3.0.1, firmware for GD32F30x
 */
 
 /*
@@ -32,59 +33,42 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "drv_usb_hw.h"
-#include "audio_core.h"
-#include "audio_out_itf.h"
+#include "usbd_msc_data.h"
 
-#ifdef USE_USB_AUDIO_MICPHONE
-    #include "wave_data.h"
-#endif
-
-usb_core_driver usb_audio;
-
-#ifdef USE_USB_AUDIO_MICPHONE
-    volatile uint32_t count_data = 0;
-#endif
-
-/*!
-    \brief      main routine will construct a USB keyboard
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-int main(void)
+/* USB mass storage page 0 inquiry data */
+const uint8_t msc_page00_inquiry_data[] = 
 {
-    usb_rcu_config();
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    (INQUIRY_PAGE00_LENGTH - 4U),
+    0x80U,
+    0x83U,
+};
 
-    usb_timer_init();
+/* USB mass storage sense 6 data */
+const uint8_t msc_mode_sense6_data[] = 
+{
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U
+};
 
-    usbd_init (&usb_audio, USB_CORE_ENUM_FS, &audio_desc, &usbd_audio_cb);
-
-    usb_intr_config();
-    
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (RESET == ctc_flag_get(CTC_FLAG_CKOK)) {
-    }
-#endif /* USE_IRC48M */
-
-    while(USBD_CONFIGURED != usb_audio.dev.cur_status);
-
-#ifdef USE_USB_AUDIO_MICPHONE
-    for(__IO uint32_t i = 0; i < 2000; i++){
-        for(__IO uint32_t j = 0; j < 10000; j++);
-    }
-
-    usbd_ep_send(&usb_audio, AUDIO_IN_EP, (uint8_t*)wavetestdata, MIC_IN_PACKET);
-    count_data = MIC_IN_PACKET;
-#endif
-
-    /* Main loop */
-    while (1) {
-    }
-}
+/* USB mass storage sense 10 data */
+const uint8_t msc_mode_sense10_data[] = 
+{
+    0x00U,
+    0x06U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U,
+    0x00U
+};

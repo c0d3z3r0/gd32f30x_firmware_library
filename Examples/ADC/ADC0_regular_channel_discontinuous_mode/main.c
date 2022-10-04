@@ -74,14 +74,14 @@ int main(void)
         /* delay 1s */
         delay_1ms(1000);
         printf("\r\n ***********************************\r\n");
-        printf("\r\n ADC1 regular channel data 0, PA0 = %04X \r\n", adc_value[0]);
-        printf("\r\n ADC1 regular channel data 1, PA1 = %04X \r\n", adc_value[1]);
-        printf("\r\n ADC1 regular channel data 2, PA2 = %04X \r\n", adc_value[2]);
-        printf("\r\n ADC1 regular channel data 3, PA3 = %04X \r\n", adc_value[3]);
-        printf("\r\n ADC1 regular channel data 4, PA4 = %04X \r\n", adc_value[4]);
-        printf("\r\n ADC1 regular channel data 5, PA5 = %04X \r\n", adc_value[5]);
-        printf("\r\n ADC1 regular channel data 6, PA6 = %04X \r\n", adc_value[6]);
-        printf("\r\n ADC1 regular channel data 7, PA7 = %04X \r\n", adc_value[7]);
+        printf("\r\n ADC0 regular channel data 0, PA0 = %04X \r\n", adc_value[0]);
+        printf("\r\n ADC0 regular channel data 1, PA1 = %04X \r\n", adc_value[1]);
+        printf("\r\n ADC0,regular channel data 2, PA2 = %04X \r\n", adc_value[2]);
+        printf("\r\n ADC0 regular channel data 3, PA3 = %04X \r\n", adc_value[3]);
+        printf("\r\n ADC0 regular channel data 4, PA4 = %04X \r\n", adc_value[4]);
+        printf("\r\n ADC0 regular channel data 5, PA5 = %04X \r\n", adc_value[5]);
+        printf("\r\n ADC0 regular channel data 6, PA6 = %04X \r\n", adc_value[6]);
+        printf("\r\n ADC0 regular channel data 7, PA7 = %04X \r\n", adc_value[7]);
     }
 }
 
@@ -159,8 +159,8 @@ void dma_config(void)
 void adc_config(void)
 {
     /* ADC continuous function disable */
-    adc_special_function_config(ADC1, ADC_CONTINUOUS_MODE, DISABLE);
-    adc_special_function_config(ADC1, ADC_SCAN_MODE, DISABLE);  
+    adc_special_function_config(ADC0, ADC_CONTINUOUS_MODE, DISABLE);
+    adc_special_function_config(ADC0, ADC_SCAN_MODE, DISABLE);  
     /* ADC trigger config */
     adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, ADC0_1_EXTTRIG_REGULAR_EXTI_11); 
     /* ADC data alignment config */

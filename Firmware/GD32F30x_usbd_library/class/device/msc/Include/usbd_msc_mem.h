@@ -1,8 +1,9 @@
 /*!
-    \file    app.c
-    \brief   USB main routine for Audio device
+    \file    usbd_msc_mem.h
+    \brief   header file for storage memory
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2021-02-20, V3.0.1, firmware for GD32F30x
 */
 
 /*
@@ -32,59 +33,28 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "drv_usb_hw.h"
-#include "audio_core.h"
-#include "audio_out_itf.h"
+#ifndef __USBD_MSC_MEM_H
+#define __USBD_MSC_MEM_H
 
-#ifdef USE_USB_AUDIO_MICPHONE
-    #include "wave_data.h"
-#endif
+#include "usbd_conf.h"
 
-usb_core_driver usb_audio;
+#define USBD_STD_INQUIRY_LENGTH     36U
 
-#ifdef USE_USB_AUDIO_MICPHONE
-    volatile uint32_t count_data = 0;
-#endif
-
-/*!
-    \brief      main routine will construct a USB keyboard
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-int main(void)
+typedef struct
 {
-    usb_rcu_config();
+    int8_t (*mem_init)         (uint8_t lun);
+    int8_t (*mem_ready)        (uint8_t lun);
+    int8_t (*mem_protected)    (uint8_t lun);
+    int8_t (*mem_read)         (uint8_t lun, uint8_t *buf, uint32_t block_addr, uint16_t block_len);
+    int8_t (*mem_write)        (uint8_t lun, uint8_t *buf, uint32_t block_addr, uint16_t block_len);
+    int8_t (*mem_maxlun)       (void);
 
-    usb_timer_init();
+    uint8_t *mem_toc_data;
+    uint8_t *mem_inquiry_data[MEM_LUN_NUM];
+    uint32_t mem_block_size[MEM_LUN_NUM];
+    uint32_t mem_block_len[MEM_LUN_NUM];
+}usbd_mem_cb;
 
-    usbd_init (&usb_audio, USB_CORE_ENUM_FS, &audio_desc, &usbd_audio_cb);
+extern usbd_mem_cb *usbd_mem_fops;
 
-    usb_intr_config();
-    
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (RESET == ctc_flag_get(CTC_FLAG_CKOK)) {
-    }
-#endif /* USE_IRC48M */
-
-    while(USBD_CONFIGURED != usb_audio.dev.cur_status);
-
-#ifdef USE_USB_AUDIO_MICPHONE
-    for(__IO uint32_t i = 0; i < 2000; i++){
-        for(__IO uint32_t j = 0; j < 10000; j++);
-    }
-
-    usbd_ep_send(&usb_audio, AUDIO_IN_EP, (uint8_t*)wavetestdata, MIC_IN_PACKET);
-    count_data = MIC_IN_PACKET;
-#endif
-
-    /* Main loop */
-    while (1) {
-    }
-}
+#endif /* __USBD_MSC_MEM_H */
