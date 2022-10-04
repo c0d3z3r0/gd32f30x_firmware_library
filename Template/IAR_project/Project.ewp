@@ -99,7 +99,7 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>GD32F307xE	GD GD32F307xE</state>
+          <state>GD32F307xC	GD GD32F307xC</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
@@ -129,7 +129,7 @@
         <option>
           <name>GeneralMisraRules04</name>
           <version>0</version>
-          <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
+          <state>011101110010111110111000110111111111111111111111111110010111101111010101111111111101111111111111101111111011111001111011111011111111111111111</state>
         </option>
         <option>
           <name>RTConfigPath2</name>
@@ -234,7 +234,7 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IEndianMode</name>
@@ -713,11 +713,11 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\GD\GD32F307xE.icf</state>
+          <state>$TOOLKIT_DIR$\config\linker\GD\GD32F307xC.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -2128,7 +2128,7 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IEndianMode</name>
@@ -2870,7 +2870,7 @@
   <group>
     <name>GD32F30x_EVAL</name>
     <file>
-      <name>$PROJ_DIR$\..\..\Utilities\gd32f30x_eval.c</name>
+      <name>$PROJ_DIR$\..\..\Utilities\gd32f307c_eval.c</name>
     </file>
   </group>
   <group>

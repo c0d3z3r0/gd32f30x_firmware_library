@@ -1129,7 +1129,7 @@
  * changes its up/down status (i.e., due to DHCP IP acquistion)
  */
 #ifndef LWIP_NETIF_STATUS_CALLBACK
-#define LWIP_NETIF_STATUS_CALLBACK      0
+#define LWIP_NETIF_STATUS_CALLBACK      1
 #endif
 
 /**

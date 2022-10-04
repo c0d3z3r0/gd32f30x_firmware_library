@@ -1,17 +1,44 @@
 /*!
     \file  main.c
     \brief TIMER2 PWM input capture demo for gd32f30x
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.0, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
 #include <stdio.h>
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
 
 void gpio_configuration(void);
 void timer_configuration(void);
@@ -62,7 +89,7 @@ void nvic_configuration(void)
 void timer_configuration(void)
 {
  /* TIMER2 configuration: PWM input mode ------------------------
-     the external signal is connected to TIMER2 CH0 pin(PB4)
+     the external signal is connected to TIMER2 CH0 pin
      the rising edge is used as active edge
      the TIMER2 CH0CV is used to compute the frequency value 
      the TIMER2 CH1CV is used to compute the duty cycle value
@@ -75,7 +102,7 @@ void timer_configuration(void)
     timer_deinit(TIMER2);
 
     /* TIMER2 configuration */
-    timer_initpara.prescaler         = 5999;
+    timer_initpara.prescaler         = 119;
     timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
     timer_initpara.counterdirection  = TIMER_COUNTER_UP;
     timer_initpara.period            = 65535;

@@ -1,12 +1,39 @@
 /*!
     \file  sdcard.c
     \brief SD card driver 
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.1, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "sdcard.h"
@@ -80,8 +107,8 @@
 #define SD_MAX_DATA_LENGTH                  ((uint32_t)0x01FFFFFF)    /* the maximum length of data */
 #define SD_ALLZERO                          ((uint32_t)0x00000000)    /* all zero */
 #define SD_RCA_SHIFT                        ((uint8_t)0x10)           /* RCA shift bits */
-#define SD_CLK_DIV_INIT                     ((uint16_t)0x0076)        /* SD clock division in initilization phase */
-#define SD_CLK_DIV_TRANS                    ((uint16_t)0x0002)        /* SD clock division in transmission phase */
+#define SD_CLK_DIV_INIT                     ((uint16_t)0x012A)        /* SD clock division in initilization phase */
+#define SD_CLK_DIV_TRANS                    ((uint16_t)0x0009)        /* SD clock division in transmission phase */
 
 #define SDIO_MASK_INTC_FLAGS                ((uint32_t)0x00C007FF)    /* mask flags of SDIO_INTC */
 
@@ -414,7 +441,7 @@ sd_error_enum sd_block_read(uint32_t *preadbuffer, uint32_t readaddr, uint16_t b
     /* initialize the variables */
     sd_error_enum status = SD_OK;
     uint32_t count = 0, align = 0, datablksize = SDIO_DATABLOCKSIZE_1BYTE, *ptempbuff = preadbuffer;
-    uint32_t timeout = 0;
+    __IO uint32_t timeout = 0;
     
     if(NULL == preadbuffer){
         status = SD_PARAMETER_INVALID;
@@ -547,7 +574,7 @@ sd_error_enum sd_multiblocks_read(uint32_t *preadbuffer, uint32_t readaddr, uint
     /* initialize the variables */
     sd_error_enum status = SD_OK;
     uint32_t count = 0, align = 0, datablksize = SDIO_DATABLOCKSIZE_1BYTE, *ptempbuff = preadbuffer;
-    uint32_t timeout = 0;
+    __IO uint32_t timeout = 0;
     
     if(NULL == preadbuffer){
         status = SD_PARAMETER_INVALID;
@@ -709,7 +736,8 @@ sd_error_enum sd_block_write(uint32_t *pwritebuffer, uint32_t writeaddr, uint16_
     sd_error_enum status = SD_OK;
     uint8_t cardstate = 0;
     uint32_t count = 0, align = 0, datablksize = SDIO_DATABLOCKSIZE_1BYTE, *ptempbuff = pwritebuffer;
-    uint32_t timeout = 0, transbytes = 0, restwords = 0, response = 0;
+    uint32_t transbytes = 0, restwords = 0, response = 0;
+    __IO uint32_t timeout = 0;
     
     if(NULL == pwritebuffer){
         status = SD_PARAMETER_INVALID;
@@ -897,7 +925,7 @@ sd_error_enum sd_multiblocks_write(uint32_t *pwritebuffer, uint32_t writeaddr, u
     uint8_t cardstate = 0;
     uint32_t count = 0, align = 0, datablksize = SDIO_DATABLOCKSIZE_1BYTE, *ptempbuff = pwritebuffer;
     uint32_t transbytes = 0, restwords = 0;
-    uint32_t timeout = 0;
+    __IO uint32_t timeout = 0;
     
     if(NULL == pwritebuffer){
         status = SD_PARAMETER_INVALID;
@@ -1276,7 +1304,7 @@ sd_error_enum sd_card_select_deselect(uint16_t cardrca)
 }
 
 /*!
-    \brief      get the card status
+    \brief      get the card status whose response format R1 contains a 32-bit field
     \param[in]  none
     \param[out] pcardstatus: a pointer that store card status
     \retval     sd_error_enum
@@ -1304,7 +1332,7 @@ sd_error_enum sd_cardstatus_get(uint32_t *pcardstatus)
 }
 
 /*!
-    \brief      get the SD card status
+    \brief      get the SD status, the size of the SD status is one data block of 512 bit
     \param[in]  none
     \param[out] psdstatus: a pointer that store SD card status
     \retval     sd_error_enum
@@ -1568,6 +1596,8 @@ uint32_t sd_card_capacity_get(void)
     uint32_t capacity = 0, devicesize = 0;
     if((SDIO_STD_CAPACITY_SD_CARD_V1_1 == cardtype) || (SDIO_STD_CAPACITY_SD_CARD_V2_0 == cardtype)){
         /* calculate the c_size(device size) */
+        tempbyte = (uint8_t)((sd_csd[1] & SD_MASK_8_15BITS) >> 8);
+        devicesize |= (uint32_t)((uint32_t)(tempbyte & 0x03) << 10);
         tempbyte = (uint8_t)(sd_csd[1] & SD_MASK_0_7BITS);
         devicesize |= (uint32_t)((uint32_t)tempbyte << 2);
         tempbyte = (uint8_t)((sd_csd[2] & SD_MASK_24_31BITS) >> 24);
@@ -1576,6 +1606,8 @@ uint32_t sd_card_capacity_get(void)
         /* calculate the c_size_mult(device size multiplier) */
         tempbyte = (uint8_t)((sd_csd[2] & SD_MASK_16_23BITS) >> 16);
         devicesize_mult = (tempbyte & 0x03) << 1;
+        tempbyte = (uint8_t)((sd_csd[2] & SD_MASK_8_15BITS) >> 8);
+        devicesize_mult |= (tempbyte & 0x80) >> 7;
         
         /* calculate the read_bl_len */
         tempbyte = (uint8_t)((sd_csd[1] & SD_MASK_16_23BITS) >> 16);
@@ -1584,6 +1616,9 @@ uint32_t sd_card_capacity_get(void)
         /* capacity = BLOCKNR*BLOCK_LEN, BLOCKNR = (C_SIZE+1)*MULT, MULT = 2^(C_SIZE_MULT+2), BLOCK_LEN = 2^READ_BL_LEN */
         capacity = (devicesize + 1)*(1 << (devicesize_mult + 2));
         capacity *= (1 << readblklen);
+        
+        /* change the unit of capacity to KByte */
+        capacity /= 1024;
     }else if(SDIO_HIGH_CAPACITY_SD_CARD == cardtype){
         /* calculate the c_size */
         tempbyte = (uint8_t)(sd_csd[1] & SD_MASK_0_7BITS);
@@ -2363,7 +2398,7 @@ static void dma_transfer_config(uint32_t *srcbuf, uint32_t bufsize)
     dma_channel_disable(DMA1, DMA_CH3);
     dma_deinit(DMA1, DMA_CH3);
     
-    /* configure the DMA1 channel3 */
+    /* configure the DMA1 channel 3 */
     dma_struct.periph_addr = (uint32_t)SDIO_FIFO_ADDR;
     dma_struct.memory_addr = (uint32_t)srcbuf;
     dma_struct.direction = DMA_MEMORY_TO_PERIPHERAL;
@@ -2373,7 +2408,7 @@ static void dma_transfer_config(uint32_t *srcbuf, uint32_t bufsize)
     dma_struct.periph_width = DMA_PERIPHERAL_WIDTH_32BIT;
     dma_struct.memory_width = DMA_MEMORY_WIDTH_32BIT; 
     dma_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
-    dma_init(DMA1, DMA_CH3, dma_struct);
+    dma_init(DMA1, DMA_CH3, &dma_struct);
     
     dma_circulation_disable(DMA1, DMA_CH3);
     dma_channel_enable(DMA1, DMA_CH3);
@@ -2407,7 +2442,7 @@ static void dma_receive_config(uint32_t *dstbuf, uint32_t bufsize)
     dma_struct.periph_width = DMA_PERIPHERAL_WIDTH_32BIT;
     dma_struct.memory_width = DMA_MEMORY_WIDTH_32BIT; 
     dma_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
-    dma_init(DMA1, DMA_CH3, dma_struct);
+    dma_init(DMA1, DMA_CH3, &dma_struct);
     
     dma_circulation_disable(DMA1, DMA_CH3);
     dma_channel_enable(DMA1, DMA_CH3);

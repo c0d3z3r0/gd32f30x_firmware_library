@@ -3188,7 +3188,7 @@
   <group>
     <name>GD32F30x_EVAL</name>
     <file>
-      <name>$PROJ_DIR$\..\..\Utilities\gd32f30x_eval.c</name>
+      <name>$PROJ_DIR$\..\..\Utilities\gd32f307c_eval.c</name>
     </file>
   </group>
   <group>

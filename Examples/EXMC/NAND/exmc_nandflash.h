@@ -1,12 +1,40 @@
 /*!
     \file  exmc_nandflash.h
-    \brief the header file of nandflash(hynix HY27UF081G2A) driver
+    \brief the header file of nandflash(GD9FU1G8F2AMG) driver
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
+
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.0, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #ifndef EXMC_NANDFLASH_H
@@ -20,9 +48,9 @@
 /* A17 = ALE high address area */
 #define EXMC_ADDR_AREA             (uint32_t)(1<<17)
 /* data area */
-#define EXMC_DATA_AREA             ((uint32_t)0x00000000)
+#define EXMC_DATA_AREA             ((uint32_t)0x0000000)
 
-/* NAND memory command (hynix HY27UF081G2A) */
+/* NAND memory command (GD9FU1G8F2AMG) */
 #define NAND_CMD_READ1_1ST         ((uint8_t)0x00)
 #define NAND_CMD_READ1_2ND         ((uint8_t)0x30)
 #define NAND_CMD_WRITE_1ST         ((uint8_t)0x80)
@@ -53,8 +81,8 @@
 /* 2 * 1024 bytes per page */
 #define NAND_PAGE_SIZE             ((uint16_t)0x0800)
 
-/* last 64 bytes as spare area */
-#define NAND_SPARE_AREA_SIZE       ((uint16_t)0x0040)
+/* last 128 bytes as spare area */
+#define NAND_SPARE_AREA_SIZE       ((uint16_t)0x0080)
 
 /* total page size = page size + spare are size */
 #define NAND_PAGE_TOTAL_SIZE       (NAND_PAGE_SIZE + NAND_SPARE_AREA_SIZE)

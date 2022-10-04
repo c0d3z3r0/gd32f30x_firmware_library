@@ -1,19 +1,46 @@
 /*!
     \file  main.c
     \brief main flash program, erase
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.1, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h" 
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
 #include "main.h" 
 
-#define FMC_PAGE_SIZE           ((uint16_t)0x400U)
+#define FMC_PAGE_SIZE           ((uint16_t)0x800U)
 #define FMC_WRITE_START_ADDR    ((uint32_t)0x08004000U)
 #define FMC_WRITE_END_ADDR      ((uint32_t)0x08004800U)
 
@@ -21,7 +48,7 @@ uint32_t *ptrd;
 uint32_t address = 0x00;
 uint32_t data0   = 0x01234567U;
 uint32_t data1   = 0xd583179bU;
-led_typedef_enum lednum = LED3;
+led_typedef_enum lednum = LED4;
 
 /* calculate the number of page to be programmed/erased */
 uint32_t PageNum = (FMC_WRITE_END_ADDR - FMC_WRITE_START_ADDR) / FMC_PAGE_SIZE;
@@ -93,7 +120,7 @@ void fmc_erase_pages_check(void)
     /* check flash whether has been erased */
     for(i = 0; i < WordNum; i++){
         if(0xFFFFFFFF != (*ptrd)){
-            lednum = LED1;
+            lednum = LED2;
             gd_eval_led_on(lednum);
             break;
         }else{
@@ -117,7 +144,7 @@ void fmc_program_check(void)
     /* check flash whether has been programmed */
     for(i = 0; i < WordNum; i++){
         if((*ptrd) != data0){
-            lednum = LED2;
+            lednum = LED3;
             gd_eval_led_on(lednum);
             break;
         }else{
@@ -135,21 +162,21 @@ void fmc_program_check(void)
 int main(void)
 {
     /* initialize led on the board */
-    gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
     gd_eval_led_init(LED3);
+    gd_eval_led_init(LED4);
 
-    /* step1: erase pages and check if it is successful. If not, light the LED1. */
+    /* step1: erase pages and check if it is successful. If not, light the LED2. */
     fmc_erase_pages();
     fmc_erase_pages_check();
 
-    /* step2: program and check if it is successful. If not, light the LED2. */
+    /* step2: program and check if it is successful. If not, light the LED3. */
     fmc_program();
     fmc_program_check();
 
-    /* if all the operations are successful, light the LED3. */
-    if(LED3 == lednum){
-        gd_eval_led_on(LED3);
+    /* if all the operations are successful, light the LED4. */
+    if(LED4 == lednum){
+        gd_eval_led_on(LED4);
     }
 
     while(1);

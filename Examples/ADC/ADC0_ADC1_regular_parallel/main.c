@@ -1,19 +1,46 @@
 /*!
     \file  main.c
     \brief ADC0_ADC1_regular_parallel
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.0, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
 #include "systick.h"
-#include <stdio.h>
 #include "main.h"
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
+#include <stdio.h>
 
 uint32_t adc_value[2];
 
@@ -38,6 +65,8 @@ int main(void)
     systick_config();  
     /* GPIO configuration */
     gpio_config();
+    /* configure COM port */
+    gd_eval_com_init(EVAL_COM0);
     /* TIMER configuration */
     timer_config();
     /* DMA configuration */
@@ -47,8 +76,12 @@ int main(void)
 
     /* enable TIMER1 */
     timer_enable(TIMER1);
-  
-    while(1){ 
+
+    while(1){
+        delay_1ms(1000);
+        printf("\n ADC0: PA0, adc_value[0] = %08X \n",adc_value[0]);
+        printf("\n ADC1: PA1, adc_value[1] = %08X \n",adc_value[1]);
+        printf("\n ******************* \n");
     }
 }
 
@@ -82,10 +115,8 @@ void rcu_config(void)
 */
 void gpio_config(void)
 {
-    /* configures led GPIO */
-    gd_eval_led_init(LED2);  
     /* config the GPIO as analog mode */
-    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_MAX, GPIO_PIN_0|GPIO_PIN_3); 
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_MAX, GPIO_PIN_0|GPIO_PIN_1); 
 }
 
 /*!
@@ -112,7 +143,7 @@ void dma_config(void)
     dma_data_parameter.direction = DMA_PERIPHERAL_TO_MEMORY;
     dma_data_parameter.number = 2;
     dma_data_parameter.priority = DMA_PRIORITY_HIGH;
-    dma_init(DMA0, DMA_CH0, dma_data_parameter);
+    dma_init(DMA0, DMA_CH0, &dma_data_parameter);
 
     dma_circulation_enable(DMA0, DMA_CH0);
   
@@ -177,8 +208,8 @@ void adc_config(void)
   
     /* ADC regular channel config */
     adc_regular_channel_config(ADC0, 0, ADC_CHANNEL_0, ADC_SAMPLETIME_55POINT5);
-    adc_regular_channel_config(ADC0, 1, ADC_CHANNEL_3, ADC_SAMPLETIME_55POINT5);
-    adc_regular_channel_config(ADC1, 0, ADC_CHANNEL_3, ADC_SAMPLETIME_55POINT5);
+    adc_regular_channel_config(ADC0, 1, ADC_CHANNEL_1, ADC_SAMPLETIME_55POINT5);
+    adc_regular_channel_config(ADC1, 0, ADC_CHANNEL_1, ADC_SAMPLETIME_55POINT5);
     adc_regular_channel_config(ADC1, 1, ADC_CHANNEL_0, ADC_SAMPLETIME_55POINT5);
 
   
@@ -200,4 +231,12 @@ void adc_config(void)
 
     /* ADC DMA function enable */
     adc_dma_mode_enable(ADC0);
+}
+
+/* retarget the C library printf function to the USART */
+int fputc(int ch, FILE *f)
+{
+    usart_data_transmit(EVAL_COM0, (uint8_t)ch);
+    while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));
+    return ch;
 }

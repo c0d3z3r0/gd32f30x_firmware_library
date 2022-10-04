@@ -1,17 +1,44 @@
 /*!
     \file  main.c
     \brief master receiver and slave transmitter interrupt
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.1, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
 #include "I2C_IE.h"
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
 
 uint8_t i2c_buffer_transmitter[16];
 uint8_t i2c_buffer_receiver[16];
@@ -38,9 +65,9 @@ int main(void)
 {
     int i;
     
-    /* initialize LED1, LED2, as the transfer instruction */
-    gd_eval_led_init(LED1);
+    /* initialize LED2, LED3, as the transfer instruction */
     gd_eval_led_init(LED2);
+    gd_eval_led_init(LED3);
     rcu_config();
     gpio_config();
     i2c_config();
@@ -56,9 +83,14 @@ int main(void)
     status = ERROR;
     
     /* enable the I2C0 interrupt */
-    i2c_interrupt_enable(I2C0, I2C_INT_ERR | I2C_INT_BUF | I2C_INT_EV);
+    i2c_interrupt_enable(I2C0, I2C_INT_ERR);
+    i2c_interrupt_enable(I2C0, I2C_INT_BUF);
+    i2c_interrupt_enable(I2C0, I2C_INT_EV);
     /* enable the I2C1 interrupt */
-    i2c_interrupt_enable(I2C1, I2C_INT_ERR | I2C_INT_BUF | I2C_INT_EV);
+    i2c_interrupt_enable(I2C1, I2C_INT_ERR);
+    i2c_interrupt_enable(I2C1, I2C_INT_BUF);
+    i2c_interrupt_enable(I2C1, I2C_INT_EV);
+    
     if(2 == I2C_nBytes){
         /* send ACK for the next byte */
         i2c_ackpos_config(I2C0, I2C_ACKPOS_NEXT);
@@ -70,16 +102,16 @@ int main(void)
     
     while(I2C_nBytes>0);
     while(SUCCESS != status);
-    /* if the transfer is successfully completed, LED1 and LED2 is on */
+    /* if the transfer is successfully completed, LED2 and LED3 is on */
     state = memory_compare(i2c_buffer_transmitter, i2c_buffer_receiver, 16);
     if(SUCCESS == state){
-        /* if success, LED1 and LED2 are on */
-        gd_eval_led_on(LED1);
+        /* if success, LED2 and LED3 are on */
         gd_eval_led_on(LED2);
+        gd_eval_led_on(LED3);
     }else{
-        /* if failed, LED1 and LED2 are off */
-        gd_eval_led_off(LED1);
-        gd_eval_led_off(LED2); 
+        /* if failed, LED2 and LED3 are off */
+        gd_eval_led_off(LED2);
+        gd_eval_led_off(LED3); 
     } 
     while(1)
     {}

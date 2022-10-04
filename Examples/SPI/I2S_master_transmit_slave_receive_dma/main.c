@@ -1,23 +1,49 @@
 /*!
     \file  main.c
-    \brief I2S master send and slave receive communication use DMA 
+    \brief I2S master send and slave receive communication use DMA
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.0, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
 
 #define arraysize         10
 
 uint8_t spi1_send_array[arraysize] = {0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
 uint8_t spi2_receive_array[arraysize]; 
 ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint8_t length);
-uint32_t send_n = 0, receive_n = 0;
 
 void rcu_config(void);
 void gpio_config(void);
@@ -32,8 +58,8 @@ void spi_config(void);
 */
 int main(void)
 {
-    /* init led1 */
-    gd_eval_led_init(LED1);
+    /* init led2 */
+    gd_eval_led_init(LED2);
 
     /* peripheral clock enable */
     rcu_config();
@@ -62,9 +88,9 @@ int main(void)
 
     /* compare receive data with send data */
     if(memory_compare(spi2_receive_array, spi1_send_array, arraysize))
-        gd_eval_led_on(LED1);
+        gd_eval_led_on(LED2);
     else
-        gd_eval_led_off(LED1);
+        gd_eval_led_off(LED2);
 
     while(1);
 }
@@ -132,7 +158,7 @@ void dma_config(void)
     dma_init_struct.number       = arraysize;
     dma_init_struct.periph_inc   = DMA_PERIPH_INCREASE_DISABLE;
     dma_init_struct.memory_inc   = DMA_MEMORY_INCREASE_ENABLE;
-    dma_init(DMA0, DMA_CH4, dma_init_struct);
+    dma_init(DMA0, DMA_CH4, &dma_init_struct);
     /* configure DMA mode */
     dma_circulation_disable(DMA0, DMA_CH4);
     dma_memory_to_memory_disable(DMA0, DMA_CH4);
@@ -143,7 +169,7 @@ void dma_config(void)
     dma_init_struct.memory_addr  = (uint32_t)spi2_receive_array;
     dma_init_struct.direction    = DMA_PERIPHERAL_TO_MEMORY;
     dma_init_struct.priority     = DMA_PRIORITY_HIGH;
-    dma_init(DMA1, DMA_CH0, dma_init_struct);
+    dma_init(DMA1, DMA_CH0, &dma_init_struct);
     /* configure DMA mode */
     dma_circulation_disable(DMA1, DMA_CH0);
     dma_memory_to_memory_disable(DMA1, DMA_CH0);

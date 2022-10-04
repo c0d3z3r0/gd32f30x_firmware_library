@@ -1,12 +1,39 @@
 /*!
     \file  gd32f30x_it.c
     \brief interrupt service routines for gd32f30x
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.1, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x_it.h"
@@ -15,6 +42,7 @@
 uint32_t ic1value = 0,ic2value = 0;
 __IO uint16_t dutycycle = 0;
 __IO float frequency = 0;
+uint8_t data_valid = 0;
 
 /*!
     \brief      this function handles NMI exception
@@ -138,12 +166,20 @@ void TIMER2_IRQHandler(void)
             /* calculate the duty cycle value */
             dutycycle = (ic2value * 100) / ic1value;
             /* calculate the frequency value */
-            frequency = (float)20000 / ic1value;
+            frequency = (float)1000000 / ic1value;
 
-            printf("the value1 is %d,the value2 is %d\n",ic1value,ic2value);
-            printf("the count is %d\n",(ic1value-ic2value));
-            printf("the dutycycle is %d\n",dutycycle);
-            printf("the frequence is %f\n",frequency);
+            if(0 != data_valid)
+            {
+                /* print valid data */
+                printf("the value1 is %d,the value2 is %d\n",ic1value,ic2value);
+                printf("the count is %d\n",(ic1value-ic2value));
+                printf("the dutycycle is %d\n",dutycycle);
+                printf("the frequence is %f\n",frequency);
+            }else{
+                /* discard the first data */
+                /* the first number is inaccurate */
+                data_valid = 1;
+            }
         }else{
             dutycycle = 0;
             frequency = 0;

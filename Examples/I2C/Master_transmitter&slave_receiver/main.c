@@ -1,24 +1,51 @@
 /*!
     \file  main.c
     \brief master transmitter slave receiver
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.1, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
 #include <stdio.h>
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
 
 #define I2C0_SLAVE_ADDRESS7    0x82
 #define I2C1_SLAVE_ADDRESS7    0x72
 
 uint8_t i2c_transmitter[16];
 uint8_t i2c_receiver[16];
-ErrStatus state = ERROR;
+__IO ErrStatus state = ERROR;
 
 void rcu_config(void);
 void gpio_config(void);
@@ -34,8 +61,8 @@ ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint16_t length);
 int main(void)
 {
     int i;
-    gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
+    gd_eval_led_init(LED3);
     rcu_config();
     gpio_config();
     i2c_config();
@@ -80,11 +107,11 @@ int main(void)
     i2c_enable(I2C0);
     state = memory_compare(i2c_transmitter, i2c_receiver,16);
     if(SUCCESS == state){
-        gd_eval_led_on(LED1);
         gd_eval_led_on(LED2);
+        gd_eval_led_on(LED3);
     }else{
-        gd_eval_led_off(LED1);
-        gd_eval_led_off(LED2); 
+        gd_eval_led_off(LED2);
+        gd_eval_led_off(LED3); 
     }
     while(1);
 }

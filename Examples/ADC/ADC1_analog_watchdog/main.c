@@ -1,24 +1,55 @@
 /*!
     \file  main.c
     \brief ADC analog watchdog
+
+    \version 2017-02-10, V1.0.0, firmware for GD32F30x
+    \version 2018-10-10, V1.1.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (C) 2017 GigaDevice
+    Copyright (c) 2018, GigaDevice Semiconductor Inc.
 
-    2017-02-10, V1.0.0, firmware for GD32F30x
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met:
+
+    1. Redistributions of source code must retain the above copyright notice, this 
+       list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice, 
+       this list of conditions and the following disclaimer in the documentation 
+       and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors 
+       may be used to endorse or promote products derived from this software without 
+       specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
 #include "systick.h"
 #include <stdio.h>
 #include "main.h"
-#include "gd32f30x_eval.h"
+#include "gd32f307c_eval.h"
 
 
-#define BOARD_ADC_CHANNEL ADC_CHANNEL_3
-#define ADC_GPIO_PORT GPIOA
-#define ADC_GPIO_PIN  GPIO_PIN_3
+#define BOARD_ADC_CHANNEL   ADC_CHANNEL_13
+#define ADC_GPIO_PORT_RCU   RCU_GPIOC
+#define ADC_GPIO_PORT       GPIOC
+#define ADC_GPIO_PIN        GPIO_PIN_3
+#define ADC_WATCHDOG_HT     0x0A00
+#define ADC_WATCHDOG_LT     0x0400
+
 
 uint16_t adc_value;
 int data;
@@ -43,16 +74,26 @@ int main(void)
     systick_config();  
     /* GPIO configuration */
     gpio_config();
+    /* configure COM port */
+    gd_eval_com_init(EVAL_COM0);
     /* NVIC configuration */
     nvic_config();
     /* ADC configuration */
     adc_config();
 
     while(1){
+        delay_1ms(1000);
+        adc_value = adc_regular_data_read(ADC1);
+        printf("\r\n ADC1 watchdog low threshold: %04X \r\n",ADC_WATCHDOG_LT);
+        printf("\r\n ADC1 watchdog hgih threshold: %04X \r\n",ADC_WATCHDOG_HT);
+        printf("\r\n ADC1 regular channel data = %04X \r\n",adc_value);
+        printf("\r\n ***********************************\r\n");
         if(1 == data){
-            data = 0;
-            delay_1ms(3000);
-            gd_eval_led_off(LED2);
+            /* turn off LED2 */
+            if((adc_value < ADC_WATCHDOG_HT) && (adc_value > ADC_WATCHDOG_LT)){
+                data = 0;
+                gd_eval_led_off(LED2);
+            }
         }      
     }
 }
@@ -66,7 +107,7 @@ int main(void)
 void rcu_config(void)
 {
     /* enable GPIOA clock */
-    rcu_periph_clock_enable(RCU_GPIOA);
+    rcu_periph_clock_enable(ADC_GPIO_PORT_RCU);
     /* enable ADC1 clock */
     rcu_periph_clock_enable(RCU_ADC1);
     /* config ADC clock */
@@ -119,7 +160,6 @@ void adc_config(void)
     /* ADC channel length config */
     adc_channel_length_config(ADC1, ADC_REGULAR_CHANNEL, 1);
  
-  
     /* ADC regular channel config */
     adc_regular_channel_config(ADC1, 0, BOARD_ADC_CHANNEL, ADC_SAMPLETIME_55POINT5);
 
@@ -131,9 +171,8 @@ void adc_config(void)
     /* ADC calibration and reset calibration */
     adc_calibration_enable(ADC1);
 
-
     /* ADC analog watchdog threshold config */
-    adc_watchdog_threshold_config(ADC1, 0x0400, 0x0A00);
+    adc_watchdog_threshold_config(ADC1, ADC_WATCHDOG_LT, ADC_WATCHDOG_HT);
     /* ADC analog watchdog single channel config */
     adc_watchdog_single_channel_enable(ADC1, BOARD_ADC_CHANNEL);
     /* ADC interrupt config */
@@ -142,4 +181,12 @@ void adc_config(void)
 
     /* ADC software trigger enable */
     adc_software_trigger_enable(ADC1, ADC_REGULAR_CHANNEL);
+}
+
+/* retarget the C library printf function to the USART */
+int fputc(int ch, FILE *f)
+{
+    usart_data_transmit(EVAL_COM0, (uint8_t)ch);
+    while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));
+    return ch;
 }

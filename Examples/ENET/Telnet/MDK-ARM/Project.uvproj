@@ -741,9 +741,9 @@
           <GroupName>Utilities</GroupName>
           <Files>
             <File>
-              <FileName>gd32f30x_eval.c</FileName>
+              <FileName>gd32f307c_eval.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\Utilities\gd32f30x_eval.c</FilePath>
+              <FilePath>..\..\..\..\Utilities\gd32f307c_eval.c</FilePath>
             </File>
           </Files>
         </Group>

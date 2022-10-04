@@ -41,11 +41,11 @@
         </option>
         <option>
           <name>MemOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>MemFile</name>
-          <state>$TOOLKIT_DIR$\CONFIG\debugger\GD\GD32F307xE.ddf</state>
+          <state>$TOOLKIT_DIR$\CONFIG\debugger\GD\GD32F307xC.ddf</state>
         </option>
         <option>
           <name>RunToEnable</name>
@@ -117,7 +117,7 @@
         </option>
         <option>
           <name>FlashLoadersV3</name>
-          <state>$TOOLKIT_DIR$\config\flashloader\GD\FlashGD32F307xE.board</state>
+          <state>$TOOLKIT_DIR$\config\flashloader\GD\FlashGD32F307xC.board</state>
         </option>
         <option>
           <name>OCImagesSuppressCheck1</name>
@@ -145,7 +145,7 @@
         </option>
         <option>
           <name>OverrideDefFlashBoard</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>OCImagesOffset1</name>
@@ -299,7 +299,7 @@
         <option>
           <name>CMSISDAPResetList</name>
           <version>1</version>
-          <state>10</state>
+          <state>9</state>
         </option>
         <option>
           <name>CMSISDAPHWResetDuration</name>
@@ -319,7 +319,7 @@
         </option>
         <option>
           <name>CMSISDAPInterfaceRadio</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CMSISDAPInterfaceCmdLine</name>
