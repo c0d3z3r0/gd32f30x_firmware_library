@@ -999,9 +999,9 @@ FlagStatus can_interrupt_flag_get(uint32_t can_periph, can_interrupt_flag_enum f
     uint32_t ret2 = RESET;
     
     /* get the staus of interrupt flag */
-    if (flag == CAN_INT_FLAG_RFF0) {
+    if (flag == CAN_INT_FLAG_RFL0) {
         ret1 = can_receive_message_length_get(can_periph, CAN_FIFO0);
-    } else if (flag == CAN_INT_FLAG_RFF1) {
+    } else if (flag == CAN_INT_FLAG_RFL1) {
         ret1 = can_receive_message_length_get(can_periph, CAN_FIFO1);
     } else if (flag == CAN_INT_FLAG_ERRN) {
         ret1 = can_error_get(can_periph);

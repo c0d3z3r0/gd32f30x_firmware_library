@@ -38,11 +38,11 @@ OF SUCH DAMAGE.
 #define USB_EPTYPE_MASK           0x03U
 
 #if defined (__CC_ARM)         /* ARM Compiler */
-static usbd_ep_ram btable_ep[EP_COUNT]__attribute__((at(USBD_RAM + BTABLE_OFFSET)));
+static usbd_ep_ram btable_ep[EP_COUNT]__attribute__((at(USBD_RAM + 2 * (BTABLE_OFFSET & 0xFFF8))));
 #elif defined (__ICCARM__)     /* IAR Compiler */
-    __no_init usbd_ep_ram btable_ep[EP_COUNT] @(USBD_RAM + BTABLE_OFFSET);
+    __no_init usbd_ep_ram btable_ep[EP_COUNT] @(USBD_RAM + 2 * (BTABLE_OFFSET & 0xFFF8));
 #elif defined (__GNUC__)       /* GNU GCC Compiler  */
-    usbd_ep_ram *btable_ep = (usbd_ep_ram *)(USBD_RAM + BTABLE_OFFSET);
+    usbd_ep_ram *btable_ep = (usbd_ep_ram *)(USBD_RAM + 2 * (BTABLE_OFFSET & 0xFFF8));
 #endif
 
 usb_core_drv usbd_core;

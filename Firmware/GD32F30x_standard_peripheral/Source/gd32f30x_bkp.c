@@ -203,7 +203,7 @@ void bkp_rtc_calibration_value_set(uint8_t value)
     uint16_t ctl;
     
     ctl = BKP_OCTL;
-    ctl &= (uint16_t)OCTL_RCCV(0);
+    ctl &= ~(uint16_t)BKP_OCTL_RCCV;
     ctl |= (uint16_t)OCTL_RCCV(value);
     BKP_OCTL = ctl;
 }

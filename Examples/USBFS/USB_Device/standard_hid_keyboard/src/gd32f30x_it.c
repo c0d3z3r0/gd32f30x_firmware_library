@@ -175,7 +175,7 @@ void EXTI0_IRQHandler(void)
 
             /* add delay time */
             for(__IO uint16_t i = 0; i < 1000; i++){
-                for(__IO uint16_t i =0; i < 200; i++);
+                for(__IO uint16_t i =0; i < 100; i++);
             }
 
             usb_rwkup_reset(&hid_keyboard);
