@@ -44,7 +44,7 @@ OF SUCH DAMAGE.
 uint8_t rxbuffer[10];
 uint8_t txbuffer[] = "\n\rUSART DMA receive and transmit example, please input 10 bytes:\n\r";
 #define ARRAYNUM(arr_name)     (uint32_t)(sizeof(arr_name) / sizeof(*(arr_name)))
-#define USART0_DATA_ADDRESS    ((uint32_t)0x40013804)
+#define USART0_DATA_ADDRESS    ((uint32_t)&USART_DATA(USART0))
 
 /*!
     \brief      main function

@@ -94,6 +94,7 @@ int main(void)
     i2c_receiver[i++] = i2c_data_receive(I2C0);
     /* send a stop condition */
     i2c_stop_on_bus(I2C0);
+    /* wait until stop condition generate */ 
     while(I2C_CTL0(I2C0)&0x0200);
     i2c_ackpos_config(I2C0, I2C_ACKPOS_CURRENT);
     /* enable acknowledge */
@@ -131,7 +132,7 @@ void gpio_config(void)
 }
 
 /*!
-    \brief      cofigure the I2C0 and I2C1 interfaces
+    \brief      cofigure the I2C0 interfaces
     \param[in]  none
     \param[out] none
     \retval     none

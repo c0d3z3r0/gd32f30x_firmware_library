@@ -55,6 +55,8 @@ and the bin image should set application address at 0x8004000. You can refer to
 internal flash memory using the GD tool "GD MCU DFU Tool" available for download 
 from www.gd32mcu.21ic.com.
 
+  The GD tool "GD MCU Dfu Tool" also can operate the option Byte.
+
   The supported memory for this example is the internal flash memory, you can also
 add a new memory interface if you have extra memory.
 

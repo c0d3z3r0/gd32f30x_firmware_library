@@ -39,9 +39,9 @@ OF SUCH DAMAGE.
   This example is based on the GD32307C-EVAL-V1.1 board, it provides a description 
 of how to enable and disable the write protection for the embedded flash.
   To enable the write Protection, uncomment the line "#define WRITE_PROTECTION_ENABLE"
-in main.c file. 
+and "#define FLASH_PAGE_PROGRAM" in main.c file. 
   To disable the Write Protection, uncomment the line "#define WRITE_PROTECTION_DISABLE"
-in main.c file.
+and "#define FLASH_PAGE_PROGRAM" in main.c file.
   If the specified pages are not write protected, an erase and a write operation are
-performed, it will take some time, then LED2 will be on. If the specified pages are 
-write protected, the operation won't be performed, then LED3 will be on.
+performed, then LED2 will be on. If the specified pages are write protected, the 
+operation won't be performed, then LED3 will be on.

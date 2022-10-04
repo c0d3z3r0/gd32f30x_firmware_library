@@ -130,10 +130,11 @@ int main(void)
 
     /* send a stop condition to I2C bus*/
     i2c_stop_on_bus(I2C0);
+    /* wait until stop condition generate */ 
     while(I2C_CTL0(I2C0)&0x0200);
     while(!i2c_flag_get(I2C1, I2C_FLAG_STPDET));
     /* clear the STPDET bit */
-    i2c_enable(I2C0);
+    i2c_enable(I2C1);
     state = memory_compare(i2c0_buff_tx, i2c1_buff_rx, BUFFER_SIZE);
     if(SUCCESS == state){
         gd_eval_led_on(LED2);

@@ -137,7 +137,6 @@ void dac_config(void)
     dac_trigger_source_config(DAC0, DAC_TRIGGER_T5_TRGO);
     dac_trigger_enable(DAC0);
     dac_wave_mode_config(DAC0, DAC_WAVE_DISABLE);
-    dac_output_buffer_disable(DAC0);
     
     /* enable DAC0 and DMA for DAC0 */
     dac_enable(DAC0);

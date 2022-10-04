@@ -100,7 +100,6 @@ void dac_config(void)
     dac_trigger_enable(DAC1);
     dac_wave_mode_config(DAC1, DAC_WAVE_MODE_TRIANGLE);
     dac_triangle_noise_config(DAC1, DAC_TRIANGLE_AMPLITUDE_2047);
-    dac_output_buffer_disable(DAC1);
     
     /* enable DAC1 and set data */
     dac_enable(DAC1);

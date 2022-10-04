@@ -140,7 +140,7 @@ typedef union
 #define USB_REQ_BOT_RESET                   0xFFU
 #define USB_REQ_GET_MAX_LUN                 0xFEU
 
-#define MAX_BULK_STALL_COUNT_LIMIT          0x04U   /* if stall is seen on bulk 
+#define MAX_BULK_STALL_COUNT_LIMIT          0x40U   /* if stall is seen on bulk 
                                             endpoint continously, this means 
                                             that device and host has phase error
                                             hence a reset is needed */

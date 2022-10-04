@@ -91,6 +91,7 @@ int main(void)
     }
     /* send a stop condition to I2C bus */
     i2c_stop_on_bus(I2C0);
+    /* wait until stop condition generate */ 
     while(I2C_CTL0(I2C0)&0x0200);
 
     /* infinite loop */

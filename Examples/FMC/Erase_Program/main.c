@@ -45,9 +45,8 @@ OF SUCH DAMAGE.
 #define FMC_WRITE_END_ADDR      ((uint32_t)0x08004800U)
 
 uint32_t *ptrd;
-uint32_t address = 0x00;
+uint32_t address = 0x00000000U;
 uint32_t data0   = 0x01234567U;
-uint32_t data1   = 0xd583179bU;
 led_typedef_enum lednum = LED4;
 
 /* calculate the number of page to be programmed/erased */
@@ -69,12 +68,16 @@ void fmc_erase_pages(void)
     fmc_unlock();
 
     /* clear all pending flags */
-    fmc_flag_clear(FMC_FLAG_BANK0_END | FMC_FLAG_BANK0_WPERR | FMC_FLAG_BANK0_PGERR );
+    fmc_flag_clear(FMC_FLAG_BANK0_END);
+    fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
+    fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
     
     /* erase the flash pages */
     for(EraseCounter = 0; EraseCounter < PageNum; EraseCounter++){
         fmc_page_erase(FMC_WRITE_START_ADDR + (FMC_PAGE_SIZE * EraseCounter));
-        fmc_flag_clear(FMC_FLAG_BANK0_END | FMC_FLAG_BANK0_WPERR | FMC_FLAG_BANK0_PGERR );
+        fmc_flag_clear(FMC_FLAG_BANK0_END);
+        fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
+        fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
     }
 
     /* lock the main FMC after the erase operation */
@@ -98,7 +101,9 @@ void fmc_program(void)
     while(address < FMC_WRITE_END_ADDR){
         fmc_word_program(address, data0);
         address += 4;
-        fmc_flag_clear(FMC_FLAG_BANK0_END | FMC_FLAG_BANK0_WPERR | FMC_FLAG_BANK0_PGERR );
+        fmc_flag_clear(FMC_FLAG_BANK0_END);
+        fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
+        fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
     }
 
     /* lock the main FMC after the program operation */

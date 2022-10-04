@@ -39,6 +39,8 @@ OF SUCH DAMAGE.
 #include "dfu_mal.h"
 #include "flash_if.h"
 #include "usb_defines.h"
+#include "dfu_core.h"
+#include "usb_delay.h"
 
 /* the reference tables of global memories callback and string descriptors.
    to add a new memory, you can do as follows: 
@@ -60,6 +62,8 @@ const uint8_t* USBD_DFU_StringDesc[MAX_USED_MEMORY_MEDIA] =
 
 /* memory buffer for downloaded data */
 uint8_t  MAL_Buffer[TRANSFER_SIZE];
+
+extern usb_core_handle_struct usbfs_core_dev;
 
 static uint8_t  DFU_MAL_CheckAddr (uint32_t Addr);
 
@@ -146,6 +150,14 @@ uint8_t  DFU_MAL_Write (uint32_t Addr, uint32_t Len)
     /* check if the address is in protected area */
     if (IS_PROTECTED_AREA(Addr)) {
         return MAL_FAIL;
+    }
+    
+    if ((Addr & MAL_MASK_OB) == OB_RDPT) {
+        usbd_ctlstatus_rx(&usbfs_core_dev);
+        delay_ms(100);
+        Option_Byte_Write(Addr,MAL_Buffer);
+        NVIC_SystemReset();
+        return MAL_OK;
     }
 
     if (memIdx < MAX_USED_MEMORY_MEDIA) {

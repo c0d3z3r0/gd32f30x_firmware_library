@@ -48,8 +48,8 @@ static __IO uint32_t usbd_cdc_altset = 0U;
 uint8_t usb_data_buffer[CDC_ACM_DATA_PACKET_SIZE];
 uint8_t usb_cmd_buffer[CDC_ACM_CMD_PACKET_SIZE];
 
-uint8_t packet_sent = 1U;
-uint8_t packet_receive = 1U;
+uint8_t packet_sent = 0U;
+uint8_t packet_receive = 0U;
 uint32_t receive_length = 0U;
 
 usbd_int_cb_struct *usbd_int_fops = NULL;
@@ -360,6 +360,10 @@ usbd_status_enum cdc_acm_req_handler (void *pudev, usb_device_req_struct *req)
             usbd_ep_tx (pudev, EP0_IN, usb_cmd_buffer, req->wLength);
             break;
         case SET_CONTROL_LINE_STATE:
+            /* detect DTE present */
+            if(req->wValue == 0x0001){
+                /* operation reserved */
+            }
             break;
         case SEND_BREAK:
             break;
@@ -445,6 +449,8 @@ usbd_status_enum cdc_acm_EP0_RxReady (void *pudev)
         linecoding.bCharFormat = usb_cmd_buffer[4];
         linecoding.bParityType = usb_cmd_buffer[5];
         linecoding.bDataBits = usb_cmd_buffer[6];
+        packet_receive = 1;
+        packet_sent = 1;
 
         cdc_cmd = NO_CMD;
     }

@@ -132,7 +132,7 @@ void gpio_config(void)
 }
 
 /*!
-    \brief      cofigure the I2C0 and I2C1 interfaces
+    \brief      cofigure the I2C0 interfaces
     \param[in]  none
     \param[out] none
     \retval     none

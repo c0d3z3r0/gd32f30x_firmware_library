@@ -47,10 +47,14 @@ OF SUCH DAMAGE.
 
 #define OB_RDPT                 0x1FFFF800
 
+#define MAL_MASK_OB             0xFFFFFF00
+
 #define FLASH_END_ADDR          0x08300000
 #define FLASH_IF_STRING         "@Internal Flash   /0x08000000/16*002Ka,112*002Kg"
 
 extern DFU_MAL_Property_TypeDef DFU_Flash_cb;
+
+extern fmc_state_enum Option_Byte_Write(uint32_t Mem_Add,uint8_t* data);
 
 #endif /* FLASH_IF_H */
 

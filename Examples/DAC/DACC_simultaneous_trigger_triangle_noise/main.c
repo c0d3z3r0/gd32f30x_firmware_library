@@ -99,15 +99,13 @@ void dac_config(void)
     dac_trigger_source_config(DAC0, DAC_TRIGGER_T5_TRGO);
     dac_trigger_enable(DAC0);
     dac_wave_mode_config(DAC0, DAC_WAVE_MODE_TRIANGLE);
-    dac_triangle_noise_config(DAC0, DAC_TRIANGLE_AMPLITUDE_1023);
-    dac_output_buffer_disable(DAC0);
+    dac_triangle_noise_config(DAC0, DAC_TRIANGLE_AMPLITUDE_1023);;
     
     /* configure the DAC1 */
     dac_trigger_source_config(DAC1, DAC_TRIGGER_T5_TRGO);
     dac_trigger_enable(DAC1);
     dac_wave_mode_config(DAC1, DAC_WAVE_MODE_TRIANGLE);
     dac_triangle_noise_config(DAC1, DAC_TRIANGLE_AMPLITUDE_1023);
-    dac_output_buffer_disable(DAC1);
     
     /* enable DAC concurrent mode and set data */
     dac_concurrent_enable();

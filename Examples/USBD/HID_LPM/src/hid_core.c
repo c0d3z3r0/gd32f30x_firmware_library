@@ -160,7 +160,7 @@ usb_descriptor_configuration_set_struct configuration_descriptor =
         .bEndpointAddress = HID_IN_EP,
         .bmAttributes = 0x03,
         .wMaxPacketSize = HID_IN_PACKET,
-        .bInterval = 0x40
+        .bInterval = 0x01
     }
 };
 
@@ -326,7 +326,7 @@ usbd_status_enum hid_req_handler (void *pudev, usb_device_req_struct *req)
 usbd_status_enum  hid_data_handler (void *pudev, usbd_dir_enum rx_tx, uint8_t ep_id)
 {
     if ((USBD_TX == rx_tx) && ((HID_IN_EP & 0x7F) == ep_id)) {
-
+    
         if (key_buffer[2] != 0) {
             key_buffer[2] = 0x00;
 

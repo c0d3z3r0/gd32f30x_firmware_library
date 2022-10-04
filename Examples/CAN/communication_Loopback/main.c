@@ -143,7 +143,7 @@ ErrStatus can_loopback(void)
     }
     timeout = 0xFFFF;
     /* waiting for receive completed */
-    while((can_receive_message_length_get(CANX, CAN_FIFO0) < 1) && (0 != timeout)){
+    while((can_receive_message_length_get(CANX, CAN_FIFO1) < 1) && (0 != timeout)){
         timeout--; 
     }
 
@@ -230,14 +230,14 @@ void can_loopback_init(void)
     can_parameter.time_triggered = DISABLE;
     can_parameter.auto_bus_off_recovery = DISABLE;
     can_parameter.auto_wake_up = DISABLE;
-    can_parameter.auto_retrans = DISABLE;
+    can_parameter.no_auto_retrans = DISABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
     can_parameter.trans_fifo_order = DISABLE;
     can_parameter.working_mode = CAN_LOOPBACK_MODE;
     /* configure baudrate to 125kbps */
     can_parameter.resync_jump_width = CAN_BT_SJW_1TQ;
     can_parameter.time_segment_1 = CAN_BT_BS1_5TQ;
-    can_parameter.time_segment_2 = CAN_BT_BS2_3TQ;
+    can_parameter.time_segment_2 = CAN_BT_BS2_4TQ;
     can_parameter.prescaler = 48;
     can_init(CANX, &can_parameter);
 

@@ -964,7 +964,7 @@
   <group>
     <name>CMSIS</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Firmware\CMSIS\GD\GD32F30x\Source\system_gd32f30x.c</name>
+      <name>$PROJ_DIR$\..\src\system_gd32f30x.c</name>
     </file>
   </group>
   <group>

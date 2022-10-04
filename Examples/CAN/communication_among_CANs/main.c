@@ -184,13 +184,13 @@ void can_config(can_parameter_struct can_parameter, can_filter_parameter_struct 
     can_parameter.time_triggered = DISABLE;
     can_parameter.auto_bus_off_recovery = DISABLE;
     can_parameter.auto_wake_up = DISABLE;
-    can_parameter.auto_retrans = DISABLE;
+    can_parameter.no_auto_retrans = DISABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
     can_parameter.trans_fifo_order = DISABLE;
     can_parameter.working_mode = CAN_NORMAL_MODE;
     can_parameter.resync_jump_width = CAN_BT_SJW_1TQ;
     can_parameter.time_segment_1 = CAN_BT_BS1_5TQ;
-    can_parameter.time_segment_2 = CAN_BT_BS2_3TQ;
+    can_parameter.time_segment_2 = CAN_BT_BS2_4TQ;
     
     /* 1MBps */
 #if CAN_BAUDRATE == 1000

@@ -428,7 +428,7 @@
             <File>
               <FileName>system_gd32f30x.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\Firmware\CMSIS\GD\GD32F30x\Source\system_gd32f30x.c</FilePath>
+              <FilePath>..\src\system_gd32f30x.c</FilePath>
             </File>
           </Files>
         </Group>

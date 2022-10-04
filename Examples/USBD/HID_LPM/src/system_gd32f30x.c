@@ -45,21 +45,18 @@
 //#define __SYSTEM_CLOCK_48M_PLL_IRC8M            (uint32_t)(48000000)
 //#define __SYSTEM_CLOCK_72M_PLL_IRC8M            (uint32_t)(72000000)
 //#define __SYSTEM_CLOCK_108M_PLL_IRC8M           (uint32_t)(108000000)
-//#define __SYSTEM_CLOCK_120M_PLL_IRC8M           (uint32_t)(120000000)
+#define __SYSTEM_CLOCK_120M_PLL_IRC8M           (uint32_t)(120000000)
 
 /* use HXTAL(XD series CK_HXTAL = 8M, CL series CK_HXTAL = 25M) */
 //#define __SYSTEM_CLOCK_HXTAL                    (uint32_t)(__HXTAL)
 //#define __SYSTEM_CLOCK_48M_PLL_HXTAL            (uint32_t)(48000000)
 //#define __SYSTEM_CLOCK_72M_PLL_HXTAL            (uint32_t)(72000000)
 //#define __SYSTEM_CLOCK_108M_PLL_HXTAL           (uint32_t)(108000000)
-#define __SYSTEM_CLOCK_120M_PLL_HXTAL           (uint32_t)(120000000)
+//#define __SYSTEM_CLOCK_120M_PLL_HXTAL           (uint32_t)(120000000)
 
 #define SEL_IRC8M       0x00U
 #define SEL_HXTAL       0x01U
 #define SEL_PLL         0x02U
-#define RCU_MODIFY      {volatile uint32_t i; \
-                         RCU_CFG0 |= RCU_AHB_CKSYS_DIV2; \
-                         for(i=0;i<20000;i++);}
 
 /* set the system clock frequency and declare the system clock configuration function */
 #ifdef __SYSTEM_CLOCK_IRC8M
@@ -114,8 +111,6 @@ void SystemInit (void)
     /* Set IRC8MEN bit */
     RCU_CTL |= RCU_CTL_IRC8MEN;
 
-    RCU_MODIFY
- 
     /* Reset CFG0 and CFG1 registers */
     RCU_CFG0 = 0x00000000U;
     RCU_CFG1 = 0x00000000U;

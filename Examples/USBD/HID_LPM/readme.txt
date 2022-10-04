@@ -39,8 +39,7 @@ OF SUCH DAMAGE.
   This demo is based on the GD32303E-EVAL-V1.1 board,it provides a description of 
 how to test the USB LPM (Link Power Management) Feature.
 
-  The demo is based on HID Keyboard example. All modifications versus original HID 
-example are under #ifdef LPM_ENABLED which is defined in usb_conf.h file.
+  The demo is based on HID Keyboard example.
 
   When LPM packet is received from Host, GD32 USB will Acknowledge the LPM packet
 and it will enter in L1 suspend mode. During USB L1 suspend mode, system will be
@@ -50,6 +49,7 @@ in STOP low power mode.
 
   The demo also implements the USB L1 remote-wakeup, which allows device to wakeup
 host during L1 suspend. L1 remote wakeup is initiated when pressing the Tamper button.
+And the letter 'a' will be printed on host.
 
   You can test L1 suspend/resume, by running the USBCV3.0 chapter9 for USB2.0 devices 
 and select (in debug mode) test "TD9.21: LPM L1 Suspend Resume Test".

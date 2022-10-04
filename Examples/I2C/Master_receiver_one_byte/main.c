@@ -86,10 +86,10 @@ int main(void)
     while(!i2c_flag_get(I2C0, I2C_FLAG_RBNE));
     /* read a data from I2C_DATA */
     i2c_receiver[i++] = i2c_data_receive(I2C0);
-    
+    /* wait until stop condition generate */ 
     while(I2C_CTL0(I2C0)&0x0200);
     /* Enable Acknowledge */
-    i2c_ack_config(I2C1, I2C_ACK_ENABLE);
+    i2c_ack_config(I2C0, I2C_ACK_ENABLE);
 
     while(1){
     }
@@ -123,7 +123,7 @@ void gpio_config(void)
 }
 
 /*!
-    \brief      cofigure the I2C0 and I2C1 interfaces
+    \brief      cofigure the I2C0 interfaces
     \param[in]  none
     \param[out] none
     \retval     none

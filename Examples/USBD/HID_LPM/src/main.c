@@ -43,17 +43,6 @@ OF SUCH DAMAGE.
 #define USB_PULLUP_PIN                  GPIO_PIN_8
 #define RCC_AHBPeriph_GPIO_PULLUP       RCU_GPIOG
 
-typedef enum
-{
-    CHAR_A = 1,
-    CHAR_B,
-    CHAR_C
-}Key_Char;
-
-__IO uint8_t prev_transfer_complete = 1;
-
-uint8_t key_buffer[HID_IN_PACKET] = {0};
-
 usbd_core_handle_struct  usb_device_dev = 
 {
 #ifdef LPM_ENABLED
@@ -74,7 +63,6 @@ void rcu_config(void);
 void key_config(void);
 void gpio_config(void);
 void nvic_config(void);
-uint8_t key_state(void);
 
 /*!
     \brief      main routine
@@ -105,28 +93,7 @@ int main(void)
     /* now the usb device is connected */
     usb_device_dev.status = USBD_CONNECTED;
 
-    while(usb_device_dev.status != USBD_CONFIGURED);
-
-    while (1) {
-        if (prev_transfer_complete) {
-            switch (key_state()) {
-            case CHAR_A:
-                key_buffer[2] = 0x04;
-                break;
-            case CHAR_B:
-                key_buffer[2] = 0x05;
-                break;
-            case CHAR_C:
-                key_buffer[2] = 0x06;
-                break;
-            default:
-                break;
-            }
-
-            if (0 != key_buffer[2]) {
-                hid_report_send(&usb_device_dev, key_buffer, HID_IN_PACKET);
-            }
-        }
+    while(1){
     }
 }
 
@@ -160,10 +127,6 @@ void rcu_config(void)
 void key_config(void)
 {
     /* keys configuration */
-    gd_eval_key_init(KEY_TAMPER, KEY_MODE_GPIO);
-    gd_eval_key_init(KEY_WAKEUP, KEY_MODE_GPIO);
-    gd_eval_key_init(KEY_USER1, KEY_MODE_GPIO);
-
     gd_eval_key_init(KEY_TAMPER, KEY_MODE_EXTI);
 }
 
@@ -202,31 +165,4 @@ void nvic_config(void)
 
     /* update the wakeup key interrupt priority */
     nvic_irq_enable(TAMPER_KEY_EXTI_IRQn, 0, 0);
-}
-
-/*!
-    \brief      to get usb keyboard state
-    \param[in]  none
-    \param[out] none
-    \retval     the char
-*/
-uint8_t  key_state (void)
-{
-    /* have pressed tamper key */
-    if (!gd_eval_key_state_get(KEY_TAMPER)) {
-        return CHAR_A;
-    }
-
-    /* have pressed wakeup key */
-    if (!gd_eval_key_state_get(KEY_WAKEUP)) {
-        return CHAR_B;
-    }
-
-    /* have pressed user key */
-    if (!gd_eval_key_state_get(KEY_USER1)) {
-        return CHAR_C;
-    }
-
-    /* no pressed any key */
-    return 0;
 }

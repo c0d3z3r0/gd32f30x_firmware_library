@@ -41,20 +41,20 @@ OF SUCH DAMAGE.
 #include <stdio.h>
 
 #define FLASH_PAGE_PROGRAM
-#define WRITE_PROTECTION_ENABLE 
-//#define WRITE_PROTECTION_DISABLE
+//#define WRITE_PROTECTION_ENABLE
+#define WRITE_PROTECTION_DISABLE
 
 typedef enum {FAILED = 0, PASSED = !FAILED} test_state;
 #define FLASH_PAGE_SIZE ((uint16_t)0x800)
 #define FMC_PAGES_PROTECTED (OB_WP_6 | OB_WP_7)
 
 #define BANK0_WRITE_START_ADDR  ((uint32_t)0x08006000)
-#define BANK0_WRITE_END_ADDR    ((uint32_t)0x08080000)
+#define BANK0_WRITE_END_ADDR    ((uint32_t)0x08008000)
 
 uint32_t erase_counter = 0x0, Address = 0x0;
 uint16_t data = 0x1753;
 uint32_t wp_value = 0xFFFFFFFF, protected_pages = 0x0;
-uint32_t NbrOfPage;
+uint32_t page_num;
 __IO fmc_state_enum fmc_state = FMC_READY;
 __IO test_state program_state = PASSED;
 
@@ -73,7 +73,9 @@ int main(void)
     fmc_unlock();
     ob_unlock();
 
-    fmc_flag_clear(FMC_FLAG_BANK0_END | FMC_FLAG_BANK0_WPERR | FMC_FLAG_BANK0_PGERR );
+    fmc_flag_clear(FMC_FLAG_BANK0_END);
+    fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
+    fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
     
     /* Get pages write protection status */
     wp_value = ob_write_protection_get();
@@ -118,19 +120,21 @@ int main(void)
 
 #ifdef FLASH_PAGE_PROGRAM  
     /* Get the number of pages to be erased */
-    NbrOfPage = (BANK0_WRITE_END_ADDR - BANK0_WRITE_START_ADDR) / FLASH_PAGE_SIZE;
+    page_num = (BANK0_WRITE_END_ADDR - BANK0_WRITE_START_ADDR) / FLASH_PAGE_SIZE;
 
     /* The selected pages are not write protected */
-    if ( (wp_value & FMC_PAGES_PROTECTED) != 0x00){
+    if((wp_value & FMC_PAGES_PROTECTED) != 0x00){
         /* Clear All pending flags */
-        fmc_flag_clear(FMC_FLAG_BANK0_END | FMC_FLAG_BANK0_WPERR | FMC_FLAG_BANK0_PGERR );
+        fmc_flag_clear(FMC_FLAG_BANK0_END);
+        fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
+        fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
 
         /* erase the FLASH pages */
-        for(erase_counter = 0; (erase_counter < NbrOfPage) && (fmc_state == FMC_READY); erase_counter++){
+        for(erase_counter = 0; (erase_counter < page_num) && (fmc_state == FMC_READY); erase_counter++){
             fmc_state = fmc_page_erase(BANK0_WRITE_START_ADDR + (FLASH_PAGE_SIZE * erase_counter));
         }
   
-        /* FLASH Half Word program of data 0x1753 at addresses defined by  BANK1_WRITE_START_ADDR and BANK1_WRITE_END_ADDR */
+        /* FLASH Half Word program of data 0x1753 at addresses defined by BANK1_WRITE_START_ADDR and BANK1_WRITE_END_ADDR */
         Address = BANK0_WRITE_START_ADDR;
 
         while((Address < BANK0_WRITE_END_ADDR) && (fmc_state == FMC_READY)){

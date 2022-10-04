@@ -334,6 +334,47 @@ static uint8_t* usbd_string_descriptor_get (usb_core_handle_struct *pudev, uint8
 */
 static void  usbd_getstatus (usb_core_handle_struct *pudev, usb_device_req_struct *req)
 {
+    uint8_t recp = LOWBYTE(req->wIndex);
+
+    static uint8_t status[2] = {0};
+
+    switch(req->bmRequestType & USB_REQTYPE_MASK) {
+        case USB_REQTYPE_DEVICE:
+            if ((USB_STATUS_ADDRESSED == pudev->dev.status) || \
+                (USB_STATUS_CONFIGURED == pudev->dev.status)) {
+
+#ifdef USBD_SELF_POWERED
+                    status[0] = USB_STATUS_SELF_POWERED;
+#else
+                    status[0] = 0U;
+#endif
+
+                if (pudev->dev.remote_wakeup) {
+                    status[0] |= USB_STATUS_REMOTE_WAKEUP;
+                } else {
+                    status[0] = 0U;
+                }
+
+                usbd_ctltx(pudev, status, 2);
+            }
+            break;
+
+        case USB_REQTYPE_INTERFACE:
+            if ((USB_STATUS_CONFIGURED == pudev->dev.status) && (recp <= USBD_ITF_MAX_NUM)) {
+                usbd_ctltx(pudev, status, 2);
+            }
+            break;
+
+        case USB_REQTYPE_ENDPOINT:
+            if (USB_STATUS_CONFIGURED == pudev->dev.status) {
+                usbd_ctltx(pudev, status, 2);
+            }
+            break;
+
+        default:
+            usbd_enum_error(pudev, req);
+            break;
+    }
 }
 
 /*!

@@ -152,7 +152,7 @@ void can_networking_init(void)
     can_parameter.time_triggered = DISABLE;
     can_parameter.auto_bus_off_recovery = DISABLE;
     can_parameter.auto_wake_up = DISABLE;
-    can_parameter.auto_retrans = DISABLE;
+    can_parameter.no_auto_retrans = DISABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
     can_parameter.trans_fifo_order = DISABLE;
     can_parameter.working_mode = CAN_NORMAL_MODE;

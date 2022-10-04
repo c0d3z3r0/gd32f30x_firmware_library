@@ -88,24 +88,17 @@ int main(void)
 
     /* check if USB device is enumerated successfully */
     while (usbfs_core_dev.dev.status != USB_STATUS_CONFIGURED) {}
-      
-    /* delay 10 ms */
-    if(NULL != usbfs_core_dev.mdelay){
-        usbfs_core_dev.mdelay(10);
-    }
 
     while (1) {
-        if (USB_STATUS_CONFIGURED == usbfs_core_dev.dev.status) {
-            if ((1 == packet_receive) && (1 == packet_sent)) {
-                packet_sent = 0;
-                /* receive datas from the host when the last packet datas have sent to the host */
-                cdc_acm_data_receive(&usbfs_core_dev);
-            } else {
-              if (0 != receive_length) {
-                    /* send receive datas */
-                    cdc_acm_data_send(&usbfs_core_dev, receive_length);
-                    receive_length = 0;
-                }
+        if ((1 == packet_receive) && (1 == packet_sent)) {
+            packet_sent = 0;
+            /* receive datas from the host when the last packet datas have sent to the host */
+            cdc_acm_data_receive(&usbfs_core_dev);
+        } else {
+          if (0 != receive_length) {
+                /* send receive datas */
+                cdc_acm_data_send(&usbfs_core_dev, receive_length);
+                receive_length = 0;
             }
         }
     }

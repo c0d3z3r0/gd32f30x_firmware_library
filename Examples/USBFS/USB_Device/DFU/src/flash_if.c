@@ -62,6 +62,56 @@ DFU_MAL_Property_TypeDef DFU_Flash_cb =
 };
 
 /*!
+    \brief      option Byte write routine.
+    \param[in]  none
+    \param[out] none
+    \retval     the state of the FMC after write option Byte operation
+*/
+fmc_state_enum Option_Byte_Write(uint32_t Mem_Add,uint8_t* data)
+{
+    uint8_t index;
+    fmc_state_enum status ;
+
+    /* unlock the flash program erase controller */
+    fmc_unlock();
+
+    /* clear pending flags */
+    fmc_flag_clear(FMC_FLAG_BANK0_PGERR | FMC_FLAG_BANK0_WPERR  | FMC_FLAG_BANK0_END);
+
+    status = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
+      
+    /* Authorize the small information block programming */
+    ob_unlock();
+    
+    /* start erase the option byte */
+    FMC_CTL0 |= FMC_CTL0_OBER;
+    FMC_CTL0 |= FMC_CTL0_START;
+    
+    status = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
+
+    FMC_CTL0 &= ~FMC_CTL0_OBER;
+    /* set the OBPG bit */
+    FMC_CTL0 |= FMC_CTL0_OBPG;
+
+    /*OptionBytes always have 16Bytes*/
+    for(index = 0;index<15;index=index+2)
+    {
+        *(__IO uint16_t*)Mem_Add = data[index]&0xff;
+
+        Mem_Add = Mem_Add + 2;
+   
+        status = fmc_bank0_ready_wait(FMC_TIMEOUT_COUNT);
+    }
+
+      /* if the program operation is completed, disable the OPTPG Bit */
+    FMC_CTL0 &= ~FMC_CTL0_OBPG;
+
+    fmc_lock();
+
+    return status;
+}
+
+/*!
     \brief      flash memory interface initialization routine.
     \param[in]  none
     \param[out] none

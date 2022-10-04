@@ -38,8 +38,8 @@ OF SUCH DAMAGE.
 
   This demo is based on the GD32307C-EVAL-V1.1 board, it shows the I2C programming 
 mode in master receiving mode which the master only want to receive one byte of
-data. In this demo,I2C1 is operated as master receiver,and the SCL line and SDA 
-line of I2C1 interface are controled by the I/O pin PB6 and PB7 respectively.
+data. In this demo,I2C0 is operated as master receiver,and the SCL line and SDA 
+line of I2C0 interface are controled by the I/O pin PB6 and PB7 respectively.
 
   This demo shows the receiving one byte process of the master. And it will store 
 the received data in the i2c_receiver array.

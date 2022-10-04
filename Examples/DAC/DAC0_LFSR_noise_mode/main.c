@@ -100,7 +100,6 @@ void dac_config(void)
     dac_trigger_enable(DAC0);
     dac_wave_mode_config(DAC0, DAC_WAVE_MODE_LFSR);
     dac_lfsr_noise_config(DAC0, DAC_LFSR_BITS10_0);
-    dac_output_buffer_disable(DAC0);
     
     /* enable DAC0 and set data */
     dac_enable(DAC0);

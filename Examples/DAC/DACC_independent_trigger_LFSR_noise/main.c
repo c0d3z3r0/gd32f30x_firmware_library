@@ -103,14 +103,12 @@ void dac_config(void)
     dac_trigger_enable(DAC0);
     dac_wave_mode_config(DAC0, DAC_WAVE_MODE_LFSR);
     dac_lfsr_noise_config(DAC0, DAC_LFSR_BITS9_0);
-    dac_output_buffer_disable(DAC0);
     
     /* configure the DAC1 */
     dac_trigger_source_config(DAC1, DAC_TRIGGER_T6_TRGO);
     dac_trigger_enable(DAC1);
     dac_wave_mode_config(DAC1, DAC_WAVE_MODE_LFSR);
     dac_lfsr_noise_config(DAC1, DAC_LFSR_BITS10_0);
-    dac_output_buffer_disable(DAC1);
     
     /* enable DAC concurrent mode and set data */
     dac_concurrent_enable();

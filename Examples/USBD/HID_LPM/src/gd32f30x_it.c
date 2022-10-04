@@ -38,10 +38,14 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x_it.h"
 #include "usbd_int.h"
+#include "hid_core.h"
 
 #ifdef LPM_ENABLED
 extern __IO uint32_t  L1_remote_wakeup;
 #endif
+
+__IO uint8_t prev_transfer_complete = 1;
+uint8_t key_buffer[HID_IN_PACKET] = {0};
 
 /*!
     \brief      this function handles NMI exception
@@ -137,7 +141,7 @@ void PendSV_Handler(void)
     \param[out] none
     \retval     none
 */
-void  USBD_LP_CAN0_RX0_IRQHandler (void)
+void USBD_LP_CAN0_RX0_IRQHandler (void)
 {
     usbd_isr();
 }
@@ -148,24 +152,38 @@ void  USBD_LP_CAN0_RX0_IRQHandler (void)
     \param[out] none
     \retval     none
 */
-void  EXTI10_15_IRQHandler (void)
+void EXTI10_15_IRQHandler (void)
 {
-    if (RESET != exti_interrupt_flag_get(TAMPER_KEY_EXTI_LINE)) {
+    if(RESET != exti_interrupt_flag_get(TAMPER_KEY_EXTI_LINE)){
 #ifdef LPM_ENABLED
-        if (L1_remote_wakeup) {
+        if(L1_remote_wakeup){
             usbd_remote_wakeup_active();
 
+            /* restore the old status */
+            usb_device_dev.status = usb_device_dev.prev_status;
+
+            /* disable L1 remote wakeup feature*/
             L1_remote_wakeup = 0;
         } else
 #endif /* LPM_ENABLED */
         /* check if the remote wakeup feature is enabled */
-        if (usb_device_dev.remote_wakeup) {
+        if(usb_device_dev.remote_wakeup){
             /* exit low power mode and re-configure clocks */
             usbd_remote_wakeup_active();
+
+            /* restore the old status */
             usb_device_dev.status = usb_device_dev.prev_status;
 
             /* disable Remote wakeup feature*/
             usb_device_dev.remote_wakeup = 0;
+        }
+
+        if(usb_device_dev.status == USBD_CONFIGURED){
+            if(prev_transfer_complete){
+                /* character 'a' */
+                key_buffer[2] = 0x04;
+                hid_report_send(&usb_device_dev, key_buffer, HID_IN_PACKET);
+            }
         }
 
         /* clear the EXTI line pending bit */
@@ -173,17 +191,13 @@ void  EXTI10_15_IRQHandler (void)
     }
 }
 
-#ifdef USBD_LOWPWR_MODE_ENABLE
-
 /*!
     \brief      this function handles USBD wakeup interrupt request.
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void  USBD_WKUP_IRQHandler (void)
+void USBD_WKUP_IRQHandler (void)
 {
     exti_interrupt_flag_clear(EXTI_18);
 }
-
-#endif /* USBD_LOWPWR_MODE_ENABLE */
