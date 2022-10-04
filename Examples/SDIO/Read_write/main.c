@@ -1,16 +1,15 @@
 /*!
-    \file  main.c
-    \brief SD card read and write demo 
+    \file    main.c
+    \brief   SD card read and write demo 
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.1, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -37,7 +36,7 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
-#include "gd32f30x_eval.h"
+#include "gd32f303e_eval.h"
 #include "sdcard.h"
 #include <stdio.h>
 
@@ -68,16 +67,16 @@ int main(void)
     /* configure the NVIC, USART and LED */
     nvic_config();
     gd_eval_com_init(EVAL_COM1);
-    gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
     gd_eval_led_init(LED3);
     gd_eval_led_init(LED4);
+    gd_eval_led_init(LED5);
     
     /* turn off all the LEDs */
-    gd_eval_led_off(LED1);
     gd_eval_led_off(LED2);
     gd_eval_led_off(LED3);
     gd_eval_led_off(LED4);
+    gd_eval_led_off(LED5);
     
     /* initialize the card */
     do{
@@ -88,11 +87,11 @@ int main(void)
         printf("\r\n Card init success!\r\n");
     }else{
         printf("\r\n Card init failed!\r\n");
-        /* turn on LED1, LED3 and turn off LED2, LED4 */
-        gd_eval_led_on(LED1);
-        gd_eval_led_on(LED3);
-        gd_eval_led_off(LED2);
-        gd_eval_led_off(LED4);
+        /* turn on LED2, LED4 and turn off LED3, LED5 */
+        gd_eval_led_on(LED2);
+        gd_eval_led_on(LED4);
+        gd_eval_led_off(LED3);
+        gd_eval_led_off(LED5);
         while (1){
         }
     }
@@ -111,11 +110,11 @@ int main(void)
     sd_error = sd_block_write(buf_write, 100*512, 512);
     if(SD_OK != sd_error){
         printf("\r\n Block write fail!");
-        /* turn on LED1, LED3 and turn off LED2, LED4 */
-        gd_eval_led_on(LED1);
-        gd_eval_led_on(LED3);
-        gd_eval_led_off(LED2);
-        gd_eval_led_off(LED4);
+        /* turn on LED2, LED4 and turn off LED3, LED5 */
+        gd_eval_led_on(LED2);
+        gd_eval_led_on(LED4);
+        gd_eval_led_off(LED3);
+        gd_eval_led_off(LED5);
         while (1){
         }
     }else{
@@ -124,11 +123,11 @@ int main(void)
     sd_error = sd_block_read(buf_read, 100*512, 512);
     if(SD_OK != sd_error){
         printf("\r\n Block read fail!");
-        /* turn on LED1, LED3 and turn off LED2, LED4 */
-        gd_eval_led_on(LED1);
-        gd_eval_led_on(LED3);
-        gd_eval_led_off(LED2);
-        gd_eval_led_off(LED4);
+        /* turn on LED2, LED4 and turn off LED3, LED5 */
+        gd_eval_led_on(LED2);
+        gd_eval_led_on(LED4);
+        gd_eval_led_off(LED3);
+        gd_eval_led_off(LED5);
         while (1){
         }
     }else{
@@ -153,11 +152,11 @@ int main(void)
         sd_error = sd_lock_unlock(SD_LOCK);
         if(SD_OK != sd_error){
             printf("\r\n Lock failed!");
-            /* turn on LED1, LED3 and turn off LED2, LED4 */
-            gd_eval_led_on(LED1);
-            gd_eval_led_on(LED3);
-            gd_eval_led_off(LED2);
-            gd_eval_led_off(LED4);
+            /* turn on LED2, LED4 and turn off LED3, LED5 */
+            gd_eval_led_on(LED2);
+            gd_eval_led_on(LED4);
+            gd_eval_led_off(LED3);
+            gd_eval_led_off(LED5);
             while (1){
             }
         }else{
@@ -174,11 +173,11 @@ int main(void)
         sd_error = sd_lock_unlock(SD_UNLOCK);
         if(SD_OK != sd_error){
             printf("\r\n Unlock failed!");
-            /* turn on LED1, LED3 and turn off LED2, LED4 */
-            gd_eval_led_on(LED1);
-            gd_eval_led_on(LED3);
-            gd_eval_led_off(LED2);
-            gd_eval_led_off(LED4);
+            /* turn on LED2, LED4 and turn off LED3, LED5 */
+            gd_eval_led_on(LED2);
+            gd_eval_led_on(LED4);
+            gd_eval_led_off(LED3);
+            gd_eval_led_off(LED5);
             while (1){
             }
         }else{
@@ -194,11 +193,11 @@ int main(void)
         sd_error = sd_block_read(buf_read, 100*512, 512);
         if(SD_OK != sd_error){
             printf("\r\n Block read fail!");
-            /* turn on LED1, LED3 and turn off LED2, LED4 */
-            gd_eval_led_on(LED1);
-            gd_eval_led_on(LED3);
-            gd_eval_led_off(LED2);
-            gd_eval_led_off(LED4);
+            /* turn on LED2, LED4 and turn off LED3, LED5 */
+            gd_eval_led_on(LED2);
+            gd_eval_led_on(LED4);
+            gd_eval_led_off(LED3);
+            gd_eval_led_off(LED5);
             while (1){
             }
         }else{
@@ -222,11 +221,11 @@ int main(void)
     sd_error = sd_multiblocks_write(buf_write, 200*512, 512, 3);
     if(SD_OK != sd_error){
         printf("\r\n Multiple block write fail!");
-        /* turn on LED1, LED3 and turn off LED2, LED4 */
-        gd_eval_led_on(LED1);
-        gd_eval_led_on(LED3);
-        gd_eval_led_off(LED2);
-        gd_eval_led_off(LED4);
+        /* turn on LED2, LED4 and turn off LED3, LED5 */
+        gd_eval_led_on(LED2);
+        gd_eval_led_on(LED4);
+        gd_eval_led_off(LED3);
+        gd_eval_led_off(LED5);
         while (1){
         }
     }else{
@@ -235,11 +234,11 @@ int main(void)
     sd_error = sd_multiblocks_read(buf_read, 200*512, 512, 3);
     if(SD_OK != sd_error){
         printf("\r\n Multiple block read fail!");
-        /* turn on LED1, LED3 and turn off LED2, LED4 */
-        gd_eval_led_on(LED1);
-        gd_eval_led_on(LED3);
-        gd_eval_led_off(LED2);
-        gd_eval_led_off(LED4);
+        /* turn on LED2, LED4 and turn off LED3, LED5 */
+        gd_eval_led_on(LED2);
+        gd_eval_led_on(LED4);
+        gd_eval_led_off(LED3);
+        gd_eval_led_off(LED5);
         while (1){
         }
     }else{
@@ -259,10 +258,10 @@ int main(void)
     }
     
     /* turn on all the LEDs */
-    gd_eval_led_on(LED1);
     gd_eval_led_on(LED2);
     gd_eval_led_on(LED3);
     gd_eval_led_on(LED4);
+    gd_eval_led_on(LED5);
     while (1){
     }
 }

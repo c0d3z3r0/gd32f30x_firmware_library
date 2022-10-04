@@ -1,16 +1,16 @@
 /*!
-    \file  gd32f30x_enet.h
-    \brief definitions for the ENET
+    \file    gd32f30x_enet.h
+    \brief   definitions for the ENET
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-04-02, V2.0.1, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -1691,14 +1691,10 @@ FlagStatus enet_ptp_flag_get(uint32_t flag);
 /* internal function */
 /* reset the ENET initpara struct, call it before using enet_initpara_config() */
 void enet_initpara_reset(void);
-/* initialize ENET peripheral with generally concerned parameters, call it by enet_init() */
-static void enet_default_init(void);
 #ifdef USE_DELAY
 /* user can provide more timing precise _ENET_DELAY_ function */
 #define _ENET_DELAY_                              delay_ms 
 #else
-/* insert a delay time */
-static void enet_delay(uint32_t ncount);
 /* default _ENET_DELAY_ function with less precise timing */
 #define _ENET_DELAY_                              enet_delay
 #endif

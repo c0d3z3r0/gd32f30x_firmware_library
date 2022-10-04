@@ -1,16 +1,15 @@
 /*!
-    \file  main.c
-    \brief TIMER2 input capture demo for gd32f30x
+    \file    main.c
+    \brief   TIMER2 input capture demo for gd32f30x
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -39,7 +38,9 @@ OF SUCH DAMAGE.
 #include "gd32f30x.h"
 #include <stdio.h>
 #include "gd32f307c_eval.h"
+#include "systick.h"
 
+extern __IO uint16_t fre;
 void gpio_configuration(void);
 void timer_configuration(void);
 void nvic_configuration(void);
@@ -53,12 +54,12 @@ int fputc(int ch, FILE *f)
     return ch;
 }
 
-/**
+/*!
     \brief      configure the GPIO ports
     \param[in]  none
     \param[out] none
     \retval     none
-  */
+*/
 void gpio_configuration(void)
 {
     rcu_periph_clock_enable(RCU_GPIOA);
@@ -68,24 +69,24 @@ void gpio_configuration(void)
     gpio_init(GPIOA,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_50MHZ,GPIO_PIN_6);
 }
 
-/**
+/*!
     \brief      configure the nested vectored interrupt controller
     \param[in]  none
     \param[out] none
     \retval     none
-  */
+*/
 void nvic_configuration(void)
 {
     nvic_priority_group_set(NVIC_PRIGROUP_PRE1_SUB3);
     nvic_irq_enable(TIMER2_IRQn, 1, 1);
 }
 
-/**
+/*!
     \brief      configure the TIMER peripheral
     \param[in]  none
     \param[out] none
     \retval     none
-  */
+*/
 void timer_configuration(void)
 {
     /* TIMER2 configuration: input capture mode -------------------
@@ -140,6 +141,11 @@ int main(void)
     gd_eval_com_init(EVAL_COM1);
     nvic_configuration();
     timer_configuration();
-
-    while (1);
+    systick_config();
+    while (1)
+    {
+        delay_1ms(1000);
+        printf("\r /**** TIMER2 Input Capture Demo ****/\r\n");
+        printf("the frequence is %d\n",fre);
+    }
 }

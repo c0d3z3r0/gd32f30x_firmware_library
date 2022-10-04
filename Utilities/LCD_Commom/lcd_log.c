@@ -1,6 +1,6 @@
 /*!
-    \file  lcd_log.c
-    \brief this file provides all the LCD Log firmware functions
+    \file    lcd_log.c
+    \brief   this file provides all the LCD Log firmware functions
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
@@ -37,36 +37,24 @@ OF SUCH DAMAGE.
 */
 
 #include "lcd_log.h"
-#include "usb_conf.h"
-#include "usb_delay.h"
+#include "usb_lcd_conf.h"
 
-extern uint16_t LINE;
+#include <stdio.h>
 
-#define LCD_ILI9320       0x8989
-#define LCD_ILI9325       0x9325
+LCD_LOG_line LCD_CacheBuffer[LCD_CACHE_DEPTH]; 
+uint32_t LCD_LineColor;
+uint16_t LCD_CacheBuffer_xptr;
+uint16_t LCD_CacheBuffer_yptr_top;
+uint16_t LCD_CacheBuffer_yptr_bottom;
 
-/*!
-    \brief      initializes the LCD of GD EVAL board
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void gd_eval_lcd_init(void)
-{
-    __IO uint32_t lcd_id = 0;
+uint16_t LCD_CacheBuffer_yptr_top_bak;
+uint16_t LCD_CacheBuffer_yptr_bottom_bak;
 
-    exmc_lcd_init();
-
-    delay_ms(50);
-
-    /* Read the LCD ID */
-    lcd_id = lcd_register_read(R0);
-
-    /* check if the LCD is ILI9320 controller */
-    if (LCD_ILI9320 == lcd_id) {
-        lcd_init();
-    }
-}
+ControlStatus LCD_CacheBuffer_yptr_invert;
+ControlStatus LCD_ScrollActive;
+ControlStatus LCD_Lock;
+ControlStatus LCD_Scrolled;
+uint16_t LCD_ScrollBackStep;
 
 /*!
     \brief      initialize the LCD Log module
@@ -76,7 +64,9 @@ void gd_eval_lcd_init(void)
 */
 void lcd_log_init (void)
 {
-    lcd_clear(BLACK);
+    lcd_log_deinit();
+
+    lcd_clear(LCD_COLOR_BLACK);
 }
 
 /*!
@@ -87,7 +77,19 @@ void lcd_log_init (void)
 */
 void lcd_log_deinit (void)
 {
-    /* no operation */
+    LCD_LineColor = LCD_LOG_TEXT_COLOR;
+    LCD_CacheBuffer_xptr = 0;
+    LCD_CacheBuffer_yptr_top = 0;
+    LCD_CacheBuffer_yptr_bottom = 0;
+
+    LCD_CacheBuffer_yptr_top_bak = 0;
+    LCD_CacheBuffer_yptr_bottom_bak = 0;
+
+    LCD_CacheBuffer_yptr_invert= ENABLE;
+    LCD_ScrollActive = DISABLE;
+    LCD_Lock = DISABLE;
+    LCD_Scrolled = DISABLE;
+    LCD_ScrollBackStep = 0;
 }
 
 /*!
@@ -99,22 +101,18 @@ void lcd_log_deinit (void)
 */
 void lcd_log_header_set (uint8_t *ptitle, uint16_t start_x)
 {
-    int i = 0;
-    int len = strlen((const char *)ptitle);
+    lcd_font_set(&font8x16);
 
-    char_format_struct chara_format =
-    {
-        .font = CHAR_FONT_8_16,
-        .direction = CHAR_DIRECTION_HORIZONTAL,
-        .char_color = RED,
-        .bk_color = BLUE
-    };
+    lcd_text_color_set(LCD_COLOR_BLUE);
 
-    lcd_rectangle_fill(210, 0, 240, 320, BLUE);
+    lcd_rectangle_fill(LCD_HEADER_X, LCD_HEADER_Y, LCD_FLAG_WIDTH, LCD_FLAG_HEIGHT);
 
-    for(i = 0; i < len; i++) {
-        lcd_char_display(230, (start_x + 8 * i), ptitle[i], chara_format);
-    }
+    lcd_background_color_set(LCD_COLOR_BLUE);
+    lcd_text_color_set(LCD_COLOR_RED);
+
+    lcd_vertical_string_display(LCD_HEADER_LINE, start_x, ptitle);
+
+    lcd_background_color_set(LCD_COLOR_BLACK);
 }
 
 /*!
@@ -126,22 +124,16 @@ void lcd_log_header_set (uint8_t *ptitle, uint16_t start_x)
 */
 void lcd_log_footer_set (uint8_t *pstatus, uint16_t start_x)
 {
-    int i = 0;
-    int Len = strlen((const char *)pstatus);
+    lcd_text_color_set(LCD_COLOR_BLUE);
 
-    char_format_struct chara_format =
-    {
-        .font = CHAR_FONT_8_16,
-        .direction = CHAR_DIRECTION_HORIZONTAL,
-        .char_color = RED,
-        .bk_color = BLUE
-    };
+    lcd_rectangle_fill(LCD_FOOTER_X, LCD_FOOTER_Y, LCD_FLAG_WIDTH, LCD_FLAG_HEIGHT);
 
-    lcd_rectangle_fill(0, 0, 30, 320, BLUE);
+    lcd_background_color_set(LCD_COLOR_BLUE);
+    lcd_text_color_set(LCD_COLOR_RED);
 
-    for (i = 0; i < Len; i++) {
-        lcd_char_display(20, (start_x + 8 * i), pstatus[i], chara_format);
-    }
+    lcd_vertical_string_display(LCD_FOOTER_LINE, start_x, pstatus);
+
+    lcd_background_color_set(LCD_COLOR_BLACK);
 }
 
 /*!
@@ -152,63 +144,106 @@ void lcd_log_footer_set (uint8_t *pstatus, uint16_t start_x)
 */
 void lcd_log_textzone_clear (uint16_t start_x,
                              uint16_t start_y,
-                             uint16_t end_x,
-                             uint16_t end_y)
+                             uint16_t width,
+                             uint16_t height)
 {
-    lcd_rectangle_fill(start_x, start_y, end_x, end_y, BLACK);
+    lcd_rectangle_fill(start_x, start_y, width, height);
 }
 
 /*!
     \brief      redirect the printf to the LCD
-    \param[in]  pstr: pointer to string to be displayed
-    \param[in]  len: string length
-    \param[in]  char_color: string color
-    \param[in]  back_color: back color
+    \param[in]  ch: character to be displayed
+    \param[in]  f: output file pointer
     \param[out] none
     \retval     none
 */
-void lcd_log_print (uint8_t *pstr, 
-                    uint16_t len, 
-                    uint16_t char_color, 
-                    uint16_t back_color)
+LCD_LOG_PUTCHAR
 {
-    uint16_t i;
+    font_struct *cFont = lcd_font_get();
+    uint32_t idx;
 
-    char_format_struct chara_format =
-    {
-        .font = CHAR_FONT_8_16,
-        .direction = CHAR_DIRECTION_HORIZONTAL,
-        .char_color = char_color,
-        .bk_color = back_color
-    };
+    if (LCD_Lock == DISABLE) {
+        if (LCD_ScrollActive == ENABLE) {
+            LCD_CacheBuffer_yptr_bottom = LCD_CacheBuffer_yptr_bottom_bak;
+            LCD_CacheBuffer_yptr_top = LCD_CacheBuffer_yptr_top_bak;
+            LCD_ScrollActive = DISABLE;
+            LCD_Scrolled = DISABLE;
+            LCD_ScrollBackStep = 0;
+        }
 
-#if defined(USE_HOST_MODE) && defined(USE_DEVICE_MODE)
-    if (LINE <= 60) {
-        LINE = 190;
-        lcd_rectangle_fill(60, 0, 210, 320, BLACK);
+        if ((LCD_CacheBuffer_xptr < LCD_FLAG_HEIGHT / cFont->width) && (ch != '\n')) {
+            if (ch != '\r') {
+                LCD_CacheBuffer[LCD_CacheBuffer_yptr_bottom].line[LCD_CacheBuffer_xptr++] = (uint16_t)ch;
+            }
+        } else {
+            if (LCD_CacheBuffer_yptr_top >= LCD_CacheBuffer_yptr_bottom) {
+                if (LCD_CacheBuffer_yptr_invert == DISABLE) {
+                    LCD_CacheBuffer_yptr_top++;
+
+                    if (LCD_CacheBuffer_yptr_top == LCD_CACHE_DEPTH) {
+                        LCD_CacheBuffer_yptr_top = 0;
+                    }
+                } else {
+                    LCD_CacheBuffer_yptr_invert= DISABLE;
+                }
+            }
+
+            for (idx = LCD_CacheBuffer_xptr; idx < LCD_FLAG_HEIGHT / cFont->width; idx++) {
+                LCD_CacheBuffer[LCD_CacheBuffer_yptr_bottom].line[LCD_CacheBuffer_xptr++] = ' ';
+            }
+
+            LCD_CacheBuffer[LCD_CacheBuffer_yptr_bottom].color = LCD_LineColor;
+            LCD_CacheBuffer_xptr = 0;
+            LCD_LOG_UpdateDisplay();
+            LCD_CacheBuffer_yptr_bottom ++; 
+
+            if (LCD_CacheBuffer_yptr_bottom == LCD_CACHE_DEPTH) {
+                LCD_CacheBuffer_yptr_bottom = 0;
+                LCD_CacheBuffer_yptr_top = 1;
+                LCD_CacheBuffer_yptr_invert = ENABLE;
+            }
+
+            if ((ch != '\n') && (ch != '\r')) {
+                LCD_CacheBuffer[LCD_CacheBuffer_yptr_bottom].line[LCD_CacheBuffer_xptr++] = (uint16_t)ch;
+            }
+        }
     }
-#else
-    #if defined USBH_CDC
-        if (LINE <= 60) {
-            LINE = 190;
-            lcd_rectangle_fill(60, 0, 210, 320, BLACK);
-        }
-    #elif defined USBD_CDC
-        if (LINE <= 40) {
-            LINE = 190;
-            lcd_rectangle_fill(40, 0, 210, 320, BLACK);
-        }
-    #else
-        if (LINE <= 30) {
-            LINE = 190;
-            lcd_rectangle_fill(30, 0, 210, 320, BLACK);
-        }
-    #endif
-#endif
 
-    for (i = 0; i < len; i ++) {
-        lcd_char_display(LINE, (10 + 8 * i), *pstr++, chara_format);
+    return ch;
+}
+
+/*!
+    \brief      update the text area display
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void LCD_LOG_UpdateDisplay (void)
+{
+    uint8_t cnt = 0 ;
+    uint16_t length = 0 ;
+    uint16_t ptr = 0, index = 0;
+
+    font_struct *cFont = lcd_font_get();
+
+    if ((LCD_CacheBuffer_yptr_bottom < (YWINDOW_SIZE - 1)) && (LCD_CacheBuffer_yptr_bottom >= LCD_CacheBuffer_yptr_top)) {
+        lcd_text_color_set (LCD_CacheBuffer[cnt + LCD_CacheBuffer_yptr_bottom].color);
+        lcd_vertical_string_display ((YWINDOW_MIN + LCD_CacheBuffer_yptr_bottom) * cFont->height, 0, (uint8_t *)(LCD_CacheBuffer[cnt + LCD_CacheBuffer_yptr_bottom].line));
+    } else {
+        if (LCD_CacheBuffer_yptr_bottom < LCD_CacheBuffer_yptr_top) {
+            /* Virtual length for rolling */
+            length = LCD_CACHE_DEPTH + LCD_CacheBuffer_yptr_bottom ;
+        } else {
+            length = LCD_CacheBuffer_yptr_bottom;
+        }
+
+        ptr = length - YWINDOW_SIZE + 1;
+
+        for (cnt = 0; cnt < YWINDOW_SIZE; cnt ++) {
+            index = (cnt + ptr ) % LCD_CACHE_DEPTH;
+
+            lcd_text_color_set (LCD_CacheBuffer[index].color);
+            lcd_vertical_string_display ((cnt + YWINDOW_MIN) * cFont->height, 0, (uint8_t *)(LCD_CacheBuffer[index].line));
+        }
     }
-
-    LINE -= 20;
 }

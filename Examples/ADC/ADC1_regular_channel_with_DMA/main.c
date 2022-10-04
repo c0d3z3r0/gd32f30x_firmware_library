@@ -1,16 +1,15 @@
 /*!
-    \file  main.c
-    \brief ADC_regular_channel_with_DMA 
+    \file    main.c
+    \brief   ADC_regular_channel_with_DMA 
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -39,16 +38,9 @@ OF SUCH DAMAGE.
 #include "gd32f30x.h"
 #include "systick.h"
 #include <stdio.h>
-#include "main.h"
 #include "gd32f307c_eval.h"
 
-
-#define BOARD_ADC_CHANNEL   ADC_CHANNEL_13
-#define ADC_GPIO_PORT_RCU   RCU_GPIOC
-#define ADC_GPIO_PORT       GPIOC
-#define ADC_GPIO_PIN        GPIO_PIN_3
-
-uint16_t adc_value;
+uint16_t adc_value[4];
 
 void rcu_config(void);
 void gpio_config(void);
@@ -61,7 +53,6 @@ void adc_config(void);
     \param[out] none
     \retval     none
 */
-
 int main(void)
 {
     /* system clocks configuration */
@@ -79,8 +70,11 @@ int main(void)
   
     while(1){
         delay_1ms(1000);
-        printf("\r\n ADC1 regular channel data = %04X \r\n",adc_value);
-        printf("\r\n ***********************************\r\n");
+        printf("\r\n //*******************************//");
+        printf("\r\n ADC0 regular channel data = %04X", adc_value[0]);
+        printf("\r\n ADC0 regular channel data = %04X", adc_value[1]);
+        printf("\r\n ADC0 regular channel data = %04X", adc_value[2]);
+        printf("\r\n ADC0 regular channel data = %04X\r\n", adc_value[3]);
     }
 }
 
@@ -93,13 +87,13 @@ int main(void)
 void rcu_config(void)
 {
     /* enable GPIOA clock */
-    rcu_periph_clock_enable(ADC_GPIO_PORT_RCU);
+    rcu_periph_clock_enable(RCU_GPIOA);
     /* enable ADC clock */
     rcu_periph_clock_enable(RCU_ADC0);
     /* enable DMA0 clock */
-    rcu_periph_clock_enable(RCU_DMA0);  
+    rcu_periph_clock_enable(RCU_DMA0);
     /* config ADC clock */
-    rcu_adc_clock_config(RCU_CKADC_CKAPB2_DIV4);
+    rcu_adc_clock_config(RCU_CKADC_CKAPB2_DIV6);
 }
 
 /*!
@@ -111,7 +105,10 @@ void rcu_config(void)
 void gpio_config(void)
 {
     /* config the GPIO as analog mode */
-    gpio_init(ADC_GPIO_PORT, GPIO_MODE_AIN, GPIO_OSPEED_MAX, ADC_GPIO_PIN);
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, GPIO_PIN_0);
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, GPIO_PIN_1);
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, GPIO_PIN_2);
+    gpio_init(GPIOA, GPIO_MODE_AIN, GPIO_OSPEED_10MHZ, GPIO_PIN_3);
 }
 
 /*!
@@ -129,15 +126,15 @@ void dma_config(void)
     dma_deinit(DMA0, DMA_CH0);
     
     /* initialize DMA single data mode */
-    dma_data_parameter.periph_addr = (uint32_t)(&ADC_RDATA(ADC0));
-    dma_data_parameter.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
-    dma_data_parameter.memory_addr = (uint32_t)(&adc_value);
-    dma_data_parameter.memory_inc = DMA_MEMORY_INCREASE_DISABLE;
+    dma_data_parameter.periph_addr  = (uint32_t)(&ADC_RDATA(ADC0));
+    dma_data_parameter.periph_inc   = DMA_PERIPH_INCREASE_DISABLE;
+    dma_data_parameter.memory_addr  = (uint32_t)(&adc_value);
+    dma_data_parameter.memory_inc   = DMA_MEMORY_INCREASE_ENABLE;
     dma_data_parameter.periph_width = DMA_PERIPHERAL_WIDTH_16BIT;
     dma_data_parameter.memory_width = DMA_MEMORY_WIDTH_16BIT;  
-    dma_data_parameter.direction = DMA_PERIPHERAL_TO_MEMORY;
-    dma_data_parameter.number = 1;
-    dma_data_parameter.priority = DMA_PRIORITY_HIGH;
+    dma_data_parameter.direction    = DMA_PERIPHERAL_TO_MEMORY;
+    dma_data_parameter.number       = 4;
+    dma_data_parameter.priority     = DMA_PRIORITY_HIGH;
     dma_init(DMA0, DMA_CH0, &dma_data_parameter);
 
     dma_circulation_enable(DMA0, DMA_CH0);
@@ -154,25 +151,30 @@ void dma_config(void)
 */
 void adc_config(void)
 {
-    /* ADC continuous function enable */
-    adc_special_function_config(ADC0, ADC_CONTINUOUS_MODE, ENABLE);
-    adc_special_function_config(ADC0, ADC_SCAN_MODE, DISABLE);    
-    /* ADC trigger config */
-    adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, ADC0_1_2_EXTTRIG_REGULAR_NONE); 
-    /* ADC data alignment config */
-    adc_data_alignment_config(ADC0, ADC_DATAALIGN_RIGHT);
     /* ADC mode config */
     adc_mode_config(ADC_MODE_FREE); 
+    /* ADC continuous function enable */
+    adc_special_function_config(ADC0, ADC_CONTINUOUS_MODE, ENABLE);
+    /* ADC scan function enable */
+    adc_special_function_config(ADC0, ADC_SCAN_MODE, ENABLE);
+    /* ADC data alignment config */
+    adc_data_alignment_config(ADC0, ADC_DATAALIGN_RIGHT);
+
     /* ADC channel length config */
-    adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 1);
+    adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 4);
+
+    /* ADC regular channel config */ 
+    adc_regular_channel_config(ADC0, 0, ADC_CHANNEL_0, ADC_SAMPLETIME_55POINT5);
+    adc_regular_channel_config(ADC0, 1, ADC_CHANNEL_1, ADC_SAMPLETIME_55POINT5);
+    adc_regular_channel_config(ADC0, 2, ADC_CHANNEL_2, ADC_SAMPLETIME_55POINT5);
+    adc_regular_channel_config(ADC0, 3, ADC_CHANNEL_3, ADC_SAMPLETIME_55POINT5);
+    
+    /* ADC trigger config */
+    adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, ADC0_1_2_EXTTRIG_REGULAR_NONE);
+    adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, ENABLE);
 
     /* ADC DMA function enable */
     adc_dma_mode_enable(ADC0);
-    
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC0, 0, BOARD_ADC_CHANNEL, ADC_SAMPLETIME_55POINT5);
-    adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, ENABLE);
-    
     /* enable ADC interface */
     adc_enable(ADC0);
     delay_1ms(1);

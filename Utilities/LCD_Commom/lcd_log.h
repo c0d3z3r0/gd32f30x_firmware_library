@@ -1,6 +1,6 @@
 /*!
-    \file  lcd_log.h
-    \brief header for the lcd_log.c file
+    \file    lcd_log.h
+    \brief   header for the lcd_log.c file
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
@@ -36,14 +36,53 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
+
 #ifndef  __LCD_LOG_H
 #define  __LCD_LOG_H
 
-#include "gd32f307c_lcd_eval.h"
+#include "usb_conf.h"
+#include "usb_lcd_conf.h"
 #include <string.h>
 
-/* initializes the LCD of GD EVAL board */
-void gd_eval_lcd_init(void);
+extern uint32_t LCD_LineColor;
+
+#define  LCD_ErrLog(...)    do { \
+                                 LCD_LineColor = LCD_COLOR_RED;\
+                                 printf("ERROR: ") ;\
+                                 printf(__VA_ARGS__);\
+                                 LCD_LineColor = LCD_LOG_DEFAULT_COLOR;\
+                               }while (0)
+
+#define  LCD_UsrLog(...)    do { \
+                                 LCD_LineColor = LCD_LOG_TEXT_COLOR;\
+                                 printf(__VA_ARGS__);\
+                               } while (0)
+
+
+#define  LCD_DbgLog(...)    do { \
+                                 LCD_LineColor = LCD_COLOR_RED;\
+                                 printf(__VA_ARGS__);\
+                                 LCD_LineColor = LCD_LOG_DEFAULT_COLOR;\
+                               }while (0)
+
+#define LCD_DevInformation(...) do { \
+                                     LCD_LineColor = LCD_COLOR_BLUE; \
+                                     printf(__VA_ARGS__); \
+                                     LCD_LineColor = LCD_LOG_DEFAULT_COLOR; \
+                                   }while(0)
+
+#if (LCD_SCROLL_ENABLED == 1)
+    #define     LCD_CACHE_DEPTH     (YWINDOW_SIZE + CACHE_SIZE)
+#else
+    #define     LCD_CACHE_DEPTH     YWINDOW_SIZE
+#endif
+
+typedef struct _LCD_LOG_line
+{
+    uint8_t  line[128];
+    uint32_t color;
+}LCD_LOG_line;
+
 /* initialize the LCD Log module */
 void lcd_log_init (void);
 /* de-initialize the LCD Log module */
@@ -52,16 +91,13 @@ void lcd_log_deinit (void);
 void lcd_log_header_set (uint8_t *ptitle, uint16_t start_x);
 /* display the application footer (status) on the LCD screen */
 void lcd_log_footer_set (uint8_t *pstatus, uint16_t start_x);
-/* redirect the printf to the LCD */
-void lcd_log_print (uint8_t *pstr, 
-                    uint16_t len, 
-                    uint16_t char_color, 
-                    uint16_t back_color);
 /* clear the text zone */
 void lcd_log_textzone_clear (uint16_t start_x, 
                              uint16_t start_y, 
                              uint16_t end_x, 
                              uint16_t end_y);
+
+void LCD_LOG_UpdateDisplay (void);
 
 
 #endif /* __LCD_LOG_H */ 

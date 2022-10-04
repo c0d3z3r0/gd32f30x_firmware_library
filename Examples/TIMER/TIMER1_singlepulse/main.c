@@ -1,16 +1,15 @@
 /*!
-    \file  main.c
-    \brief TIMER1 single pulse demo for gd32f30x
+    \file    main.c
+    \brief   TIMER1 single pulse demo for gd32f30x
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -44,12 +43,12 @@ OF SUCH DAMAGE.
 void gpio_config(void);
 void timer_config(void);
 
-/**
+/*!
     \brief      configure the GPIO ports
     \param[in]  none
     \param[out] none
     \retval     none
-  */
+*/
 void gpio_config(void)
 {
     rcu_periph_clock_enable(RCU_GPIOA);
@@ -60,12 +59,12 @@ void gpio_config(void)
     gpio_init(GPIOA,GPIO_MODE_AF_PP,GPIO_OSPEED_50MHZ,GPIO_PIN_1);
 }
 
-/**
+/*!
     \brief      configure the TIMER peripheral
     \param[in]  none
     \param[out] none
     \retval     none
-  */
+*/
 void timer_config(void)
 {
     /* -----------------------------------------------------------------------

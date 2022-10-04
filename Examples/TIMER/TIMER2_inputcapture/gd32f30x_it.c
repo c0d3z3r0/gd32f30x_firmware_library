@@ -1,16 +1,15 @@
 /*!
-    \file  gd32f30x_it.c
-    \brief interrupt service routines for gd32f30x
+    \file    gd32f30x_it.c
+    \brief   interrupt service routines for gd32f30x
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -38,11 +37,11 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x_it.h"
 #include <stdio.h>
-
+#include "systick.h"
 uint16_t readvalue1 = 0, readvalue2 = 0;
 __IO uint16_t ccnumber = 0;
 __IO uint32_t count = 0;
-__IO float fre = 0;
+__IO uint16_t fre = 0;
 
 /*!
     \brief      this function handles NMI exception
@@ -144,13 +143,15 @@ void PendSV_Handler(void)
 */
 void SysTick_Handler(void)
 {
+    delay_decrement();
 }
 
-/**
-  * @brief  This function handles TIMER2 interrupt request.
-  * @param  None
-  * @retval None
-  */
+/*!
+    \brief      this function handles TIMER2 interrupt request.
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
 void TIMER2_IRQHandler(void)
 {
     if(SET == timer_interrupt_flag_get(TIMER2,TIMER_INT_FLAG_CH0)){
@@ -159,11 +160,11 @@ void TIMER2_IRQHandler(void)
 
         if(0 == ccnumber){
             /* read channel 0 capture value */
-            readvalue1 = timer_channel_capture_value_register_read(TIMER2,TIMER_CH_0);
+            readvalue1 = timer_channel_capture_value_register_read(TIMER2,TIMER_CH_0)+1;
             ccnumber = 1;
         }else if(1 == ccnumber){
             /* read channel 0 capture value */
-            readvalue2 = timer_channel_capture_value_register_read(TIMER2,TIMER_CH_0);
+            readvalue2 = timer_channel_capture_value_register_read(TIMER2,TIMER_CH_0)+1;
 
             if(readvalue2 > readvalue1){
                 count = (readvalue2 - readvalue1); 
@@ -171,10 +172,7 @@ void TIMER2_IRQHandler(void)
                 count = ((0xFFFFU - readvalue1) + readvalue2); 
             }
 
-            fre = (float)1000000U / count;
-            printf("the value1 is %d,the value2 is %d\n",readvalue1,readvalue2);
-            printf("the count is %d\n",count);
-            printf("the frequence is %f\n",fre);
+            fre = 1000000U / count;
             ccnumber = 0;
         }
     }

@@ -1,16 +1,15 @@
 /*!
-    \file  readme.txt
-    \brief description of the ADC regular channel with DMA
+    \file    readme.txt
+    \brief   description of the ADC regular channel with DMA
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -36,15 +35,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This demo is based on the GD32307C-EVAL-V1.1 board, it shows how to
-use the ADC to convert analog signal to digital data through DMA. The ADC is 
-configured in continuous mode, PC3 is chosen as analog input pin.
-  
-  As the ADC convertion begins by software, the converted data from ADC_RDATA 
-register to SRAM begins continuously. Users can change the VR1 on the board, 
-measure TP pad board, and check if its value matches the converted data through 
-the watch window.
+  This demo is based on the GD32307C-EVAL-V1.1 board, it shows how to use the ADC to
+convert analog signal to digital data through DMA. The ADC is configured in continuous
+mode, PA0~PA3 are chosen as analog input pin.
 
-  The analog input pin should configured to AIN mode.
-  We can watch array adc_value in debug mode or COM0.
+  As the ADC conversion begins by software, the converted datas from ADC_RDATA register 
+to SRAM begins continuously.
+
+  The analog input pin should configured to AIN mode. We can watch array adc_value[] in 
+debug mode or COM0.
   

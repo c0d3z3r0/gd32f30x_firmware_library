@@ -1,16 +1,15 @@
 /*!
-    \file  gd32f30x_it.c
-    \brief interrupt service routines for gd32f30x
+    \file    gd32f30x_it.c
+    \brief   interrupt service routines for gd32f30x
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -38,11 +37,12 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x_it.h"
 #include <stdio.h>
+#include "systick.h"
 
 uint32_t ic1value = 0,ic2value = 0;
 __IO uint16_t dutycycle = 0;
-__IO float frequency = 0;
-uint8_t data_valid = 0;
+__IO uint16_t frequency = 0;
+
 
 /*!
     \brief      this function handles NMI exception
@@ -144,13 +144,15 @@ void PendSV_Handler(void)
 */
 void SysTick_Handler(void)
 {
+    delay_decrement();
 }
 
-/**
-  * @brief  This function handles TIMER2 interrupt request.
-  * @param  None
-  * @retval None
-  */
+/*!
+    \brief      this function handles TIMER2 interrupt request.
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
 void TIMER2_IRQHandler(void)
 {
     if(SET == timer_interrupt_flag_get(TIMER2,TIMER_INT_FLAG_CH0)){
@@ -166,20 +168,8 @@ void TIMER2_IRQHandler(void)
             /* calculate the duty cycle value */
             dutycycle = (ic2value * 100) / ic1value;
             /* calculate the frequency value */
-            frequency = (float)1000000 / ic1value;
+            frequency = 1000000 / ic1value;
 
-            if(0 != data_valid)
-            {
-                /* print valid data */
-                printf("the value1 is %d,the value2 is %d\n",ic1value,ic2value);
-                printf("the count is %d\n",(ic1value-ic2value));
-                printf("the dutycycle is %d\n",dutycycle);
-                printf("the frequence is %f\n",frequency);
-            }else{
-                /* discard the first data */
-                /* the first number is inaccurate */
-                data_valid = 1;
-            }
         }else{
             dutycycle = 0;
             frequency = 0;

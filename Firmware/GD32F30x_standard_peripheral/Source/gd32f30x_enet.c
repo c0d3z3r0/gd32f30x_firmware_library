@@ -1,16 +1,16 @@
 /*!
-    \file  gd32f30x_enet.c
-    \brief ENET driver
+    \file    gd32f30x_enet.c
+    \brief   ENET driver
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-04-02, V2.0.1, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -93,6 +93,13 @@ static const uint16_t enet_reg_tab[] = {
 0x1000, 0x1004, 0x1008, 0x100C, 0x1010, 0x1014, 0x1018, 0x101C, 0x1020, 0x1024, 0x1048,
 0x104C, 0x1050, 0x1054};
 
+/* initialize ENET peripheral with generally concerned parameters, call it by enet_init() */
+static void enet_default_init(void);
+
+#ifndef USE_DELAY
+/* insert a delay time */
+static void enet_delay(uint32_t ncount);
+#endif /* USE_DELAY */
 
 /*!
     \brief      deinitialize the ENET, and reset structure parameters for ENET initialization
@@ -1714,7 +1721,7 @@ void enet_forward_feature_disable(uint32_t feature)
 }
                             
 /*!                    
-    \brief      enable ENET fliter feature
+    \brief        enable ENET fliter feature
     \param[in]  feature: the feature of ENET fliter mode,
                 one or more parameters can be selected which are shown as below
       \arg        ENET_SRC_FILTER: filter source address function

@@ -1,17 +1,16 @@
 /*!
-    \file  gd32f30x_i2c.c
-    \brief I2C driver
+    \file    gd32f30x_i2c.c
+    \brief   I2C driver
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
     \version 2019-04-16, V2.0.1, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -276,15 +275,15 @@ void i2c_master_addressing(uint32_t i2c_periph, uint32_t addr, uint32_t trandire
 /*!
     \brief      enable dual-address mode
     \param[in]  i2c_periph: I2Cx(x=0,1)
-    \param[in]  addr: the second address in dual-address mode
+    \param[in]  dualaddr: the second address in dual-address mode
     \param[out] none
     \retval     none
 */
-void i2c_dualaddr_enable(uint32_t i2c_periph, uint32_t addr)
+void i2c_dualaddr_enable(uint32_t i2c_periph, uint32_t dualaddr)
 {
     /* configure address */
-    addr = addr & I2C_ADDRESS2_MASK;
-    I2C_SADDR1(i2c_periph) = (I2C_SADDR1_DUADEN | addr);
+    dualaddr = dualaddr & I2C_ADDRESS2_MASK;
+    I2C_SADDR1(i2c_periph) = (I2C_SADDR1_DUADEN | dualaddr);
 }
 
 /*!

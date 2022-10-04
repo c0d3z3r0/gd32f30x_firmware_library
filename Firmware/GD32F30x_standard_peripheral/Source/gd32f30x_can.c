@@ -1,18 +1,18 @@
 /*!
-    \file  gd32f30x_can.c
-    \brief CAN driver
+    \file    gd32f30x_can.c
+    \brief   CAN driver
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
     \version 2019-11-27, V2.0.1, firmware for GD32F30x
     \version 2020-03-02, V2.0.2, firmware for GD32F30x
+    \version 2020-07-14, V2.0.3, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -965,7 +965,7 @@ FlagStatus can_flag_get(uint32_t can_periph, can_flag_enum flag)
 */
 void can_flag_clear(uint32_t can_periph, can_flag_enum flag)
 {
-    CAN_REG_VAL(can_periph, flag) |= BIT(CAN_BIT_POS(flag));
+    CAN_REG_VAL(can_periph, flag) = BIT(CAN_BIT_POS(flag));
 }
 
 /*!
@@ -1038,5 +1038,5 @@ FlagStatus can_interrupt_flag_get(uint32_t can_periph, can_interrupt_flag_enum f
 */
 void can_interrupt_flag_clear(uint32_t can_periph, can_interrupt_flag_enum flag)
 {
-    CAN_REG_VALS(can_periph, flag) |= BIT(CAN_BIT_POS0(flag));
+    CAN_REG_VALS(can_periph, flag) = BIT(CAN_BIT_POS0(flag));
 }

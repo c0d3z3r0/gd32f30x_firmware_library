@@ -1,17 +1,15 @@
 /*!
-    \file  exmc_nandflash.c
-    \brief nandflash(GD9FU1G8F2AMG) driver
+    \file    exmc_nandflash.c
+    \brief   nandflash(GD9FU1G8F2AMG) driver
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
-
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -107,9 +105,9 @@ void exmc_nandflash_init(void)
 
     /* EXMC configuration */
     nand_timing_init_struct.setuptime = 2;
-    nand_timing_init_struct.waittime = 3;
-    nand_timing_init_struct.holdtime = 2;
-    nand_timing_init_struct.databus_hiztime = 2;
+    nand_timing_init_struct.waittime = 7;
+    nand_timing_init_struct.holdtime = 4;
+    nand_timing_init_struct.databus_hiztime = 4;
 
     nand_init_struct.nand_bank = EXMC_BANK1_NAND;
     nand_init_struct.ecc_size = EXMC_ECC_SIZE_2048BYTES;
@@ -173,8 +171,8 @@ static uint8_t exmc_nand_writepage(uint8_t *pbuffer, nand_address_struct address
                     bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0
        first byte:  A7   A6   A5   A4   A3   A2   A1   A0    (bit7 - bit0 of page address)
        second byte: 0    0    0    0    A11  A10  A9   A8    (bit11 - bit8 of page address, high 4bit must be zero)
-       third byte£º A19  A18  A17  A16  A15  A14  A13  A12
-       fourth byte£ºA27  A26  A25  A24  A23  A22  A21  A20
+       third byte: A19  A18  A17  A16  A15  A14  A13  A12
+       fourth byte: A27  A26  A25  A24  A23  A22  A21  A20
     */
     NAND_ADDR_AREA = address.page_in_offset;
     NAND_ADDR_AREA = address.page_in_offset >> 8;
@@ -215,8 +213,8 @@ static uint8_t exmc_nand_readpage(uint8_t *pbuffer, nand_address_struct address,
                      bit7 bit6 bit5 bit4 bit3 bit2 bit1 bit0
         first byte:  A7   A6   A5   A4   A3   A2   A1   A0    (bit7 - bit0 of page address)
         second byte: 0    0    0    0    A11  A10  A9   A8    (bit11 - bit8 of page address, high 4bit must be zero)
-        third byte£º A19  A18  A17  A16  A15  A14  A13  A12
-        fourth byte£ºA27  A26  A25  A24  A23  A22  A21  A20
+        third byte: A19  A18  A17  A16  A15  A14  A13  A12
+        fourth byte: A27  A26  A25  A24  A23  A22  A21  A20
     */
     NAND_ADDR_AREA = address.page_in_offset;
     NAND_ADDR_AREA = address.page_in_offset >> 8;
@@ -305,7 +303,7 @@ static uint8_t exmc_nand_writedata(uint8_t *pbuffer, nand_address_struct physica
     /* if the number of data bytes to be written plus the offset is greater than the page size,
        the automatic next page */
     while(bytecount + physicaladdress.page_in_offset > NAND_PAGE_SIZE){
-        if(exmc_nand_writepage(temp_pbuffer, physicaladdress, NAND_PAGE_SIZE - physicaladdress.page_in_offset) != NAND_OK){
+        if(NAND_OK != exmc_nand_writepage(temp_pbuffer, physicaladdress, NAND_PAGE_SIZE - physicaladdress.page_in_offset)){
             return NAND_FAIL;
         }
         /* compute address of the next block */
@@ -338,7 +336,7 @@ static uint8_t exmc_nand_readdata(uint8_t *pbuffer, nand_address_struct phyaddre
     uint8_t *temp_pbuffer = pbuffer;
     /* if the number of data bytes to be read plus the offset is greater than the page size, the automatic next page */
     while(bytecount + phyaddress.page_in_offset > NAND_PAGE_SIZE){
-        if(exmc_nand_readpage(temp_pbuffer, phyaddress, NAND_PAGE_SIZE - phyaddress.page_in_offset) != NAND_OK){
+        if(NAND_OK != exmc_nand_readpage(temp_pbuffer, phyaddress, NAND_PAGE_SIZE - phyaddress.page_in_offset)){
             return NAND_FAIL;
         }
         phyaddress.page++;

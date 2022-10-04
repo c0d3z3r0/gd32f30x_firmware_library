@@ -1,16 +1,15 @@
 /*!
-    \file  readme.txt
-    \brief description of SD card read and write example
+    \file    readme.txt
+    \brief   description of SD card read and write example
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2018-12-25, V2.0.1, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -39,10 +38,10 @@ OF SUCH DAMAGE.
   This example is based on the GD32F303E-EVAL-V1.0 board, it shows how to use SDIO to read or
 write to SD card. After initializing the card successfully, print out the detailed information
 of the card by USART. Then write a block of data to the card and read. If any error occurs,
-print the error message and turn on LED1, LED3 and turn off LED2, LED4. After that, do the
+print the error message and turn on LED2, LED4 and turn off LED3, LED5. After that, do the
 lock and unlock operation test. Lock the card first and try to erase the data of the card. 
 Then unlock the card and erase the card. If any error occurs, print the error message and 
-turn on LED1, LED3 and turn off LED2, LED4. Last is the multiple blocks operation test. If
+turn on LED2, LED4 and turn off LED3, LED5. Last is the multiple blocks operation test. If
 no error occurs, turn on all the LEDs.
 
   Uncomment the macro DATA_PRINT to print out the data and display them through HyperTerminal.

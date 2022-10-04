@@ -1,16 +1,15 @@
 /*!
-    \file  main.c
-    \brief main flash program, erase
+    \file    main.c
+    \brief   main flash program, erase
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -36,9 +35,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "gd32f30x.h" 
+#include "gd32f30x.h"
 #include "gd32f307c_eval.h"
-#include "main.h" 
+#include "main.h"
 
 #define FMC_PAGE_SIZE           ((uint16_t)0x800U)
 #define FMC_WRITE_START_ADDR    ((uint32_t)0x08004000U)
@@ -71,7 +70,7 @@ void fmc_erase_pages(void)
     fmc_flag_clear(FMC_FLAG_BANK0_END);
     fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
     fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
-    
+
     /* erase the flash pages */
     for(EraseCounter = 0; EraseCounter < PageNum; EraseCounter++){
         fmc_page_erase(FMC_WRITE_START_ADDR + (FMC_PAGE_SIZE * EraseCounter));

@@ -1,16 +1,15 @@
 /*!
-    \file  main.c
-    \brief main flash program, write_protection
+    \file    main.c
+    \brief   main flash program, write_protection
 
     \version 2017-02-10, V1.0.0, firmware for GD32F30x
     \version 2018-10-10, V1.1.0, firmware for GD32F30x
     \version 2018-12-25, V2.0.0, firmware for GD32F30x
+    \version 2020-09-30, V2.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2018, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
+    Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -58,17 +57,18 @@ uint32_t page_num;
 __IO fmc_state_enum fmc_state = FMC_READY;
 __IO test_state program_state = PASSED;
 
-/**
-  * @brief  Main program.
-  * @param  None
-  * @retval None
-  */
+/*!
+    \brief      main function
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
 int main(void)
 {
     /* initialize led on the board */
     gd_eval_led_init(LED2);
     gd_eval_led_init(LED3);
-    
+
     /* unlock the flash program/erase controller */
     fmc_unlock();
     ob_unlock();
@@ -76,7 +76,7 @@ int main(void)
     fmc_flag_clear(FMC_FLAG_BANK0_END);
     fmc_flag_clear(FMC_FLAG_BANK0_WPERR);
     fmc_flag_clear(FMC_FLAG_BANK0_PGERR);
-    
+
     /* Get pages write protection status */
     wp_value = ob_write_protection_get();
 
@@ -88,7 +88,7 @@ int main(void)
     if((wp_value | (~FMC_PAGES_PROTECTED)) != 0xFFFFFFFF ){
         /* Erase all the option Bytes */
         fmc_state = ob_erase();
-    
+
         /* Check if there is write protected pages */
         if(protected_pages != 0x0){
             /* Restore write protected pages */
@@ -101,10 +101,10 @@ int main(void)
 #elif defined WRITE_PROTECTION_ENABLE
     /* Get current write protected pages and the new pages to be protected */
     protected_pages =  (~wp_value) | FMC_PAGES_PROTECTED; 
-  
+
     /* Check if desired pages are not yet write protected */
     if(((~wp_value) & FMC_PAGES_PROTECTED )!= FMC_PAGES_PROTECTED){
-  
+
         /* Erase all the option Bytes because if a program operation is 
         performed on a protected page, the Flash memory returns a 
         protection error */
@@ -112,13 +112,13 @@ int main(void)
 
         /* Enable the pages write protection */
         fmc_state = ob_write_protection_enable(protected_pages);
-  
+
         /* Generate System Reset to load the new option byte values */
         NVIC_SystemReset();
     }
 #endif /* WRITE_PROTECTION_DISABLE */
 
-#ifdef FLASH_PAGE_PROGRAM  
+#ifdef FLASH_PAGE_PROGRAM
     /* Get the number of pages to be erased */
     page_num = (BANK0_WRITE_END_ADDR - BANK0_WRITE_START_ADDR) / FLASH_PAGE_SIZE;
 
@@ -133,7 +133,7 @@ int main(void)
         for(erase_counter = 0; (erase_counter < page_num) && (fmc_state == FMC_READY); erase_counter++){
             fmc_state = fmc_page_erase(BANK0_WRITE_START_ADDR + (FLASH_PAGE_SIZE * erase_counter));
         }
-  
+
         /* FLASH Half Word program of data 0x1753 at addresses defined by BANK1_WRITE_START_ADDR and BANK1_WRITE_END_ADDR */
         Address = BANK0_WRITE_START_ADDR;
 
@@ -153,8 +153,8 @@ int main(void)
         }
         gd_eval_led_on(LED2);
     }
-    else{ 
-        /* Error to program the flash : The desired pages are write protected */ 
+    else{
+        /* Error to program the flash : The desired pages are write protected */
         program_state = FAILED;
         gd_eval_led_on(LED3);
 
