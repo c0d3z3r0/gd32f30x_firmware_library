@@ -47,18 +47,18 @@ OF SUCH DAMAGE.
 */
 int main(void)
 {
-    /* configure NVIC */
+    /* NVIC configuration */
     nvic_priority_group_set(NVIC_PRIGROUP_PRE0_SUB4);
     nvic_irq_enable(LVD_IRQn,0,0);
-    /* clock enable */
+    /* enable clock */
     rcu_periph_clock_enable(RCU_PMU);
-    /* initialize LED1 */
+    /* initialize LED2 */
     gd_eval_led_init(LED2);
-    /* turn on LED1*/
+    /* turn on LED2*/
     gd_eval_led_on(LED2);
-    /* configure EXTI_16  */
+    /* EXTI_16 configuration */
     exti_init(EXTI_16, EXTI_INTERRUPT, EXTI_TRIG_BOTH);
-    /* configure the lvd threshold to 3.1v */
+    /* configure the LVD threshold to 2.9v */
     pmu_lvd_select(PMU_LVDT_7);
 
     while(1){

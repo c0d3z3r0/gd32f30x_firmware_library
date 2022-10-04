@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 */
 
   This example is based on the GD32307C-EVAL-V1.1 board, it shows how to use low voltage detector. 
-If VDD/VDDA is higher or lower than the LVD threshold, then a lvd event will occur. The event
+If VDD/VDDA is higher or lower than the LVD threshold, then a LVD event will occur. The event
 is internally connected to the EXTI line 16 and can generate an interrupt if enabled through
 the EXTI registers. Use external power connect 3.3v pin and GND pin of the board , adjust 
 voltage higher or lower than the LVD threshold 3.1v, LED2 will toggle.

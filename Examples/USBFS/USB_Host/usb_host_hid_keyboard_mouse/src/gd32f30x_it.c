@@ -36,10 +36,15 @@ OF SUCH DAMAGE.
 #include "drv_usbh_int.h"
 #include "drv_usb_hw.h"
 
+extern usbh_host usb_host;
 extern usb_core_driver usbh_core;
 
 void usb_timer_irq (void);
 
+#if USB_LOW_POWER
+/* local function prototypes ('static') */
+static void resume_mcu_clk(void);
+#endif /* USB_LOW_POWER */
 /*!
     \brief      this function handles NMI exception
     \param[in]  none
@@ -159,3 +164,89 @@ void TIMER2_IRQHandler(void)
 {
     usb_timer_irq();
 }
+
+#if USB_LOW_POWER
+
+/*!
+    \brief      this function handles external line 0 interrupt request.
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void EXTI0_IRQHandler(void)
+{
+    if (exti_interrupt_flag_get(WAKEUP_KEY_EXTI_LINE) != RESET) {
+        if (usb_host.suspend_flag == 1) {
+            usb_host.suspend_flag = 0;
+            usb_host.wakeup_mode = 1; /* general wakeup mode */
+
+            /* configure system clock */
+            resume_mcu_clk();
+        }
+
+        /* clear the EXTI line pending bit */
+        exti_interrupt_flag_clear(WAKEUP_KEY_EXTI_LINE);
+    }
+}
+
+#endif /* USB_LOW_POWER */
+
+#if USB_LOW_POWER
+
+/*!
+    \brief      this function handles USBHS wakeup interrupt request.
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void USBFS_WKUP_IRQHandler(void)
+{
+    if (usb_host.suspend_flag == 1) {
+        usb_host.suspend_flag = 0;
+        usb_host.wakeup_mode = 2; /* remote wakeup mode */
+
+        /* configure system clock */
+        resume_mcu_clk();
+    }
+
+    exti_interrupt_flag_clear(EXTI_18);
+}
+
+/*!
+    \brief      resume mcu clock
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+static void resume_mcu_clk(void)
+{
+    /* enable HSE */
+    rcu_osci_on(RCU_HXTAL);
+
+    /* wait till HSE is ready */
+    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
+    }
+
+    /* enable PLL1 */
+    rcu_osci_on(RCU_PLL1_CK);
+
+    /* wait till PLL1 is ready */
+    while(RESET == rcu_flag_get(RCU_FLAG_PLL1STB)){
+    }
+
+    /* enable PLL */
+    rcu_osci_on(RCU_PLL_CK);
+
+    /* wait till PLL is ready */
+    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)){
+    }
+
+    /* select PLL as system clock source */
+    rcu_system_clock_source_config(RCU_CKSYSSRC_PLL);
+
+    /* wait till PLL is used as system clock source */
+    while(RCU_SCSS_PLL != rcu_system_clock_source_get()){
+    }
+}
+
+#endif /* USB_LOW_POWER */

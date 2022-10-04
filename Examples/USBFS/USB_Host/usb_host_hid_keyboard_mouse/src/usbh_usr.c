@@ -37,11 +37,13 @@ OF SUCH DAMAGE.
 #include "usbh_hid_mouse.h"
 #include "usbh_hid_keybd.h"
 #include "usb_lcd_conf.h"
+#include "drv_usb_hw.h"
 #include <string.h>
 
 extern int16_t XLoc, YLoc;
 extern __IO int16_t PrevX, PrevY;
 
+extern usbh_host usb_host;
 extern usb_core_driver usb_hid_core;
 
 uint16_t KeybrdCharXpos = 0U;
@@ -88,6 +90,7 @@ void usbh_user_init(void)
 
         /* configure the User key */
         gd_eval_key_init(KEY_USER, KEY_MODE_GPIO);
+        gd_eval_key_init(KEY_WAKEUP, KEY_MODE_EXTI);
 
         gd_eval_lcd_init();
 
@@ -300,6 +303,24 @@ void usbh_user_device_not_supported(void)
 usbh_user_status usbh_user_userinput(void)
 {
     usbh_user_status usbh_usr_status = USBH_USER_NO_RESP;
+
+#if USB_LOW_POWER
+
+    if(usb_host.suspend_flag){
+        LCD_UsrLog("> Host in suspend status.\n");
+        LCD_UsrLog("> Pls press KEY_WAKEUP key (General wakeup).\n");
+        LCD_UsrLog("> Or operate device (Remote wakeup).\n");
+    }else{
+        if(usb_host.wakeup_mode == 1){
+            usb_host.wakeup_mode = 0;
+            LCD_UsrLog("> General wakeup success.\n");
+        }else if(usb_host.wakeup_mode == 2){
+            usb_host.wakeup_mode = 0;
+            LCD_UsrLog("> Remote wakeup success.\n");
+        }else{
+        }
+    }
+#endif /* USB_LOW_POWER */
 
     /*Key B3 is in polling mode to detect user action */
     if(RESET == gd_eval_key_state_get(KEY_USER)){

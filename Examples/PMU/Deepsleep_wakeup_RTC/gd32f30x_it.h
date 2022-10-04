@@ -1,15 +1,12 @@
 /*!
-    \file    main.h
-    \brief   the header file of the main
+    \file    gd32f30x_it.h
+    \brief   the header file of the ISR
 
-    \version 2017-02-10, V1.0.0, firmware for GD32F30x
-    \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
-    \version 2020-09-30, V2.1.0, firmware for GD32F30x
+    \version 2021-12-30, V1.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2021, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,10 +32,31 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef GD32F30X_IT_H
+#define GD32F30X_IT_H
 
-/* led spark function */
-void led_spark(void);
+#include "gd32f30x.h"
 
-#endif /* MAIN_H */
+/* function declarations */
+/* NMI handle function */
+void NMI_Handler(void);
+/* HardFault handle function */
+void HardFault_Handler(void);
+/* MemManage handle function */
+void MemManage_Handler(void);
+/* BusFault handle function */
+void BusFault_Handler(void);
+/* UsageFault handle function */
+void UsageFault_Handler(void);
+/* SVC handle function */
+void SVC_Handler(void);
+/* DebugMon handle function */
+void DebugMon_Handler(void);
+/* PendSV handle function */
+void PendSV_Handler(void);
+/* SysTick handle function */
+void SysTick_Handler(void);
+/* this function handles RTC global interrupt request */
+void RTC_Alarm_IRQHandler(void); 
+
+#endif /* GD32F30X_IT_H */

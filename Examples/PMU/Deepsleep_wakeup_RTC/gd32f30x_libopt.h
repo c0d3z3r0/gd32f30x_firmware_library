@@ -1,15 +1,12 @@
 /*!
-    \file    main.h
-    \brief   the header file of the main
+    \file    gd32f30x_libopt.h
+    \brief   library optional for gd32f30x
 
-    \version 2017-02-10, V1.0.0, firmware for GD32F30x
-    \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
-    \version 2020-09-30, V2.1.0, firmware for GD32F30x
+    \version 2021-12-30, V1.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2021, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,10 +32,32 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef GD32F30X_LIBOPT_H
+#define GD32F30X_LIBOPT_H
 
-/* led spark function */
-void led_spark(void);
+#include "gd32f30x_rcu.h"
+#include "gd32f30x_adc.h"
+#include "gd32f30x_can.h"
+#include "gd32f30x_crc.h"
+#include "gd32f30x_ctc.h"
+#include "gd32f30x_dac.h"
+#include "gd32f30x_dbg.h"
+#include "gd32f30x_dma.h"
+#include "gd32f30x_exti.h"
+#include "gd32f30x_fmc.h"
+#include "gd32f30x_fwdgt.h"
+#include "gd32f30x_gpio.h"
+#include "gd32f30x_i2c.h"
+#include "gd32f30x_pmu.h"
+#include "gd32f30x_bkp.h"
+#include "gd32f30x_rtc.h"
+#include "gd32f30x_sdio.h"
+#include "gd32f30x_spi.h"
+#include "gd32f30x_timer.h"
+#include "gd32f30x_usart.h"
+#include "gd32f30x_wwdgt.h"
+#include "gd32f30x_misc.h"
+#include "gd32f30x_enet.h"
+#include "gd32f30x_exmc.h"
 
-#endif /* MAIN_H */
+#endif /* GD32F30X_LIBOPT_H */

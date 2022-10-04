@@ -1,12 +1,12 @@
 /*!
     \file    readme.txt
-    \brief   description of the usb host mode to control hid device
+    \brief   description of wakeup from deepsleep mode by RTC alarm demo
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2021-12-30, V1.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2021, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -32,29 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This demo is based on the GD32307C-EVAL board, and it provides a description of 
-how to use the USBFS host peripheral on the GD32F30x devices.
-
-  When an USB Device is attached to the Host port, the device is enumerated and checked
-whether it can support HID device, if the attached device is HID one, when the user
-press the user key, the mouse or the keyboard application is launched.
-
-  If a mouse has been attached, moving the mouse will print the position of the mouse and 
-the state of button through the serial port.
-
-  If a keyboard has been attached, pressing the keyboard will print the state of the button
-through the serial port.
-
-Note: In the USB Host HID class, two layouts are defined in the usbh_hid_keybd.h file
-      and could be used (Azerty and Querty)
-        //#define QWERTY_KEYBOARD
-        #define AZERTY_KEYBOARD
-
-     The User can eventually add his own layout by editing the HID_KEYBRD_Key array
-     in the usbh_hid_keybd.c file.
-
-  The demo support the functions of host suspend and wakup. The macro of USB_LOW_POWER can 
-be set to 1 to test the suspend and wakeup. If you want to use the general wakeup mode, please 
-press the CET key. If you want to use the remote wakeup mode, please operating device, such as 
-move the mouse or press the keyboard. If you want the program to continue running, please press 
-the CET key.
+    This demo is based on the GD32307C-EVAL-V1.1, it explains how to configure the
+RTC module to wake up MCU from deepsleep and feed dog in RTC alarm interrupt.
+    Select RCU_IRC40K as RTC and FWDGT clock source. The RTC alarm interval is 2s and the 
+FWDGT timeout is configured as 8s.
+    After start-up, the LED2 is off and the LED5 is on. After 2 seconds, LED5 is off and the 
+MCU enters deepsleep mode. MCU is waked up by RTC alarm every 2 seconds. After wakeup, LED2 
+is toggled, then MCU enters deepsleep mode again.

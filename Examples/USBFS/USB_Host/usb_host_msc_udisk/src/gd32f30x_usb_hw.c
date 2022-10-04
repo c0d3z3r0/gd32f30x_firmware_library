@@ -3,6 +3,7 @@
     \brief   this file implements the board support package for the USB host library
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2021-06-22, V3.0.1, firmware for GD32F30x
 */
 
 /*
@@ -153,10 +154,10 @@ void usb_vbus_drive (uint8_t state)
 {
     if (0 == state) {
         /* disable is needed on output of the power switch */
-        gpio_bit_reset(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
+        gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
     } else {
         /* enable the power switch by driving the enable low */
-        gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
+        gpio_bit_reset(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
     }
 }
 
@@ -170,10 +171,10 @@ void usb_vbus_config (void)
 {
     rcu_periph_clock_enable(HOST_POWERSW_PORT_RCC);
 
-    gpio_init(HOST_POWERSW_PORT, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, HOST_POWERSW_VBUS);
+    gpio_init(HOST_POWERSW_PORT, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, HOST_POWERSW_VBUS);
 
     /* by default, disable is needed on output of the power switch */
-    gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
+    usb_vbus_drive(0U);
 
     /* delay is need for stabilizing the vbus low in reset condition,
      * when vbus=1 and reset-button is pressed by user 

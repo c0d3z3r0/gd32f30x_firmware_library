@@ -1,15 +1,12 @@
 /*!
     \file    main.c
-    \brief   standby wakeup through wakeup pin
+    \brief   standby wakeup through RTC alarm interrupt
 
-    \version 2017-02-10, V1.0.0, firmware for GD32F30x
-    \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
-    \version 2020-09-30, V2.1.0, firmware for GD32F30x
+    \version 2021-12-30, V1.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2021, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -36,10 +33,12 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f30x.h"
-#include <stdio.h>
 #include "gd32f307c_eval.h"
+#include "systick.h"
+#include "main.h"
 
 void led_config(void);
+void rtc_configuration(void);
 
 /*!
     \brief      main function
@@ -49,28 +48,28 @@ void led_config(void);
 */
 int main(void)
 {
-    /* enable clock */
-    rcu_periph_clock_enable(RCU_PMU);
+    systick_config();
     /* LED configuration and turn on all LEDs */
     led_config();
     gd_eval_led_on(LED2);
-    gd_eval_led_on(LED4);
     gd_eval_led_on(LED3);
+    gd_eval_led_on(LED4);
     gd_eval_led_on(LED5);
-    /* tamper key configuration */
-    gd_eval_key_init(KEY_TAMPER, KEY_MODE_GPIO);
-    /* enable wakeup pin */
-    pmu_wakeup_pin_enable();
-    /* press tamper key to enter standby mode and use wakeup key to wakeup mcu */
+    /* delay 2s */
+    delay_1ms(2000);
+    /* enable PMU clock */
+    rcu_periph_clock_enable(RCU_PMU);
+    /* configure RTC */
+    rtc_configuration();
+    /* PMU enters standby mode */
+    pmu_to_standbymode(WFI_CMD);
+    
     while(1){
-        if(RESET == gpio_input_bit_get(TAMPER_KEY_GPIO_PORT, TAMPER_KEY_PIN)){
-            pmu_to_standbymode(WFI_CMD);
-        }
     }
 }
 
 /*!
-    \brief      configure LED 
+    \brief      configure LEDs
     \param[in]  none
     \param[out] none
     \retval     none
@@ -81,4 +80,50 @@ void led_config(void)
     gd_eval_led_init(LED3);
     gd_eval_led_init(LED4);
     gd_eval_led_init(LED5);
+}
+
+/*!
+    \brief      configure the RTC
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void rtc_configuration(void)
+{
+    /* enable BKPI clock */
+    rcu_periph_clock_enable(RCU_BKPI);
+    /* allow access to backup domain */
+    pmu_backup_write_enable();
+    /* reset backup domain */
+    bkp_deinit();
+    
+    /* enable IRC40K */
+    rcu_osci_on(RCU_IRC40K);
+    /* wait till IRC40K is ready */
+    rcu_osci_stab_wait(RCU_IRC40K);
+    /* select RCU_IRC40K as RTC clock source */
+    rcu_rtc_clock_config(RCU_RTCSRC_IRC40K);
+    /* enable RTC clock */
+    rcu_periph_clock_enable(RCU_RTC);
+
+    /* wait for RTC registers synchronization */
+    rtc_register_sync_wait();
+    /* wait until last write operation on RTC registers has finished */
+    rtc_lwoff_wait();
+    /* enable the RTC alarm interrupt */
+    rtc_interrupt_enable(RTC_INT_ALARM);
+    /* wait until last write operation on RTC registers has finished */
+    rtc_lwoff_wait();
+    /* set RTC prescaler: set RTC period to 1s */
+    rtc_prescaler_set(40000);
+    /* wait until last write operation on RTC registers has finished */
+    rtc_lwoff_wait();
+    rtc_counter_set(0U);
+    /* wait until last write operation on RTC registers has finished */
+    rtc_lwoff_wait();
+    rtc_alarm_config(ALARM_TIME_INTERVAL);
+    /* wait until last write operation on RTC registers has finished */
+    rtc_lwoff_wait();
+    /* clear the RTC alarm flag */
+    rtc_flag_clear(RTC_FLAG_ALARM);
 }

@@ -59,7 +59,7 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 /* SysTick handle function */
 void SysTick_Handler(void);
-/* EXTI4_15 handle function */
-void EXTI4_15_IRQHandler(void);
+/* EXTI10_15 handle function */
+void EXTI10_15_IRQHandler(void);
 
 #endif /* GD32F30X_IT_H */

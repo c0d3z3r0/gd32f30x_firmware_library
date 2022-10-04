@@ -35,9 +35,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This example is based on the GD32307C-EVAL-V1.1 board, it shows pmu how to enter standby mode and wakeup it. 
-Press tamper key enter standby mode, led turn off. When you press 
-wakeup key, mcu will be wakeuped from standby mode, led will be turn on. when exit from
-the standby mode, a power-on reset occurs and the mcu will execute instruction code 
+  This example is based on the GD32307C-EVAL-V1.1 board, it shows pmu how to enter standby 
+mode and wakeup it. Press tamper key enter standby mode, led turn off. When you press wakeup 
+key, mcu will be wakeuped from standby mode, led will be turn on. when exit from the standby 
+mode, a power-on reset occurs and the mcu will execute instruction code 
 from the 0x00000000 address.
  

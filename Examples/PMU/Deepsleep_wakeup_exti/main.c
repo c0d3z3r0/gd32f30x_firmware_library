@@ -50,25 +50,25 @@ void led_config(void);
 */
 int main(void)
 {
-    /* systick config */
+    /* systick configuration */
     systick_config();
-    /* led config */
+    /* LED configuration */
     led_config();
-    /* clock enable */
+    /* enable clock */
     rcu_periph_clock_enable(RCU_PMU);
-    /* wakeup key config */
+    /* wakeup key configuration */
     gd_eval_key_init(KEY_WAKEUP, KEY_MODE_GPIO);
-    /* tamper key EXTI config */
+    /* tamper key EXTI configuration */
     gd_eval_key_init(KEY_TAMPER, KEY_MODE_EXTI);
-    /* press wakeup key to enter deepsleep mode and use tamper key generate a exti interrupt to wakeup mcu */
+    /* press wakeup key to enter deepsleep mode and use tamper key to generate a exti interrupt to wakeup mcu */
     while(1){
         if(RESET == gpio_input_bit_get(WAKEUP_KEY_GPIO_PORT, WAKEUP_KEY_PIN))
-            pmu_to_deepsleepmode(PMU_LDO_LOWPOWER, WFI_CMD);
+            pmu_to_deepsleepmode(PMU_LDO_LOWPOWER, PMU_LOWDRIVER_DISABLE, WFI_CMD);
     }
 }
 
 /*!
-    \brief      toggle the led
+    \brief      toggle the LED
     \param[in]  none
     \param[out] none
     \retval     none
@@ -78,14 +78,14 @@ void led_spark(void)
     static __IO uint32_t timingdelaylocal = 0;
 
     if (timingdelaylocal != 0x00){
-        /* all the leds on */
+        /* all the LEDs on */
         if(timingdelaylocal < 200){
             gd_eval_led_on(LED2);
             gd_eval_led_on(LED3);
             gd_eval_led_on(LED4);
             gd_eval_led_on(LED5);
         }else{
-            /* all the leds off */
+            /* all the LEDs off */
             gd_eval_led_off(LED2);
             gd_eval_led_off(LED3);
             gd_eval_led_off(LED4);
@@ -98,7 +98,7 @@ void led_spark(void)
 }
 
 /*!
-    \brief      led config
+    \brief      LED configuration
     \param[in]  none
     \param[out] none
     \retval     none

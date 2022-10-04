@@ -1,15 +1,12 @@
 /*!
-    \file    main.h
-    \brief   the header file of the main
+    \file    systick.h
+    \brief   the header file of systick
 
-    \version 2017-02-10, V1.0.0, firmware for GD32F30x
-    \version 2018-10-10, V1.1.0, firmware for GD32F30x
-    \version 2018-12-25, V2.0.0, firmware for GD32F30x
-    \version 2020-09-30, V2.1.0, firmware for GD32F30x
+    \version 2021-12-30, V1.0.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2021, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,10 +32,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef SYS_TICK_H
+#define SYS_TICK_H
 
-/* led spark function */
-void led_spark(void);
+#include <stdint.h>
 
-#endif /* MAIN_H */
+/* configure systick */
+void systick_config(void);
+/* delay a time in milliseconds */
+void delay_1ms(uint32_t count);
+/* delay decrement */
+void delay_decrement(void);
+
+#endif /* SYS_TICK_H */

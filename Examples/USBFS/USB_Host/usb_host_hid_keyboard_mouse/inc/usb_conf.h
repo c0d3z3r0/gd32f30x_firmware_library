@@ -78,7 +78,7 @@ OF SUCH DAMAGE.
 #endif
 
 #define USB_SOF_OUTPUT                                     0U
-#define USB_LOW_POWER                                      0U
+#define USB_LOW_POWER                                      0U /* if you want to test the host suspend and wakeup function, please set 1 */
 
 //#define USB_FS_LOW_PWR_ENABLE
 

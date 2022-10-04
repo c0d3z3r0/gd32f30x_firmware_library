@@ -3,6 +3,7 @@
     \brief   this file implements the board support package for the USB host library
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2021-06-22, V3.0.1, firmware for GD32F30x
 */
 
 /*
@@ -127,7 +128,7 @@ void usb_intr_config (void)
 
     nvic_irq_enable((uint8_t)USBFS_IRQn, 2U, 0U);
 
-#ifdef USB_OTG_FS_LOW_PWR_MGMT_SUPPORT
+#ifdef USB_LOW_POWER
 
     /* enable the power module clock */
     rcu_periph_clock_enable(RCU_PMU);
@@ -139,7 +140,7 @@ void usb_intr_config (void)
 
     nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 1U, 0U);
 
-#endif /* USBHS_LOW_PWR_MGMT_SUPPORT */
+#endif /* USB_LOW_POWER */
 }
 
 /*!
@@ -152,10 +153,10 @@ void usb_vbus_drive (uint8_t state)
 {
     if (0U == state){
         /* DISABLE is needed on output of the Power Switch */
-        gpio_bit_reset(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
+        gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
     }else{
         /*ENABLE the Power Switch by driving the Enable LOW */
-        gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
+        gpio_bit_reset(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
     }
 }
 
@@ -169,10 +170,10 @@ void usb_vbus_config (void)
 {
     rcu_periph_clock_enable(HOST_POWERSW_PORT_RCC);
 
-    gpio_init(HOST_POWERSW_PORT, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, HOST_POWERSW_VBUS);
+    gpio_init(HOST_POWERSW_PORT, GPIO_MODE_OUT_OD, GPIO_OSPEED_50MHZ, HOST_POWERSW_VBUS);
 
     /* by default, disable is needed on output of the power switch */
-    gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
+    usb_vbus_drive(0U);
 
     /* Delay is need for stabilizing the Vbus Low in Reset Condition,
      * when Vbus=1 and Reset-button is pressed by user 
