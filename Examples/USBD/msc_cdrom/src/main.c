@@ -3,10 +3,11 @@
     \brief   USB device main routine
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -37,6 +38,7 @@ OF SUCH DAMAGE.
 
 usb_dev usb_msc;
 
+extern const uint8_t Flash_Data[];
 /*!
     \brief      main routine will construct a MSC device
     \param[in]  none
@@ -45,6 +47,8 @@ usb_dev usb_msc;
 */
 int main(void)
 {
+    __IO uint8_t flag = 0U;
+
     /* system clocks configuration */
     rcu_config();
 
@@ -61,6 +65,8 @@ int main(void)
     gpio_bit_set(USB_PULLUP, USB_PULLUP_PIN);
 
     usbd_connect(&usb_msc);
+
+    flag = Flash_Data[0];
 
     while(USBD_CONFIGURED != usb_msc.cur_status){
     }

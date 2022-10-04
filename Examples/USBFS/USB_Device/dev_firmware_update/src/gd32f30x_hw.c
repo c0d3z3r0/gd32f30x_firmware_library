@@ -3,10 +3,11 @@
     \brief   USB hardware configuration for GD32F30x
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -71,19 +72,7 @@ void usb_rcu_config(void)
         /*  reserved  */
     }
 
-#ifndef USE_IRC48M
     rcu_usb_clock_config(usbfs_prescaler);
-#else
-    /* enable IRC48M clock */
-    rcu_osci_on(RCU_IRC48M);
-
-    /* wait till IRC48M is ready */
-    while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-    }
-
-    rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-#endif /* USE_IRC48M */
-    
     rcu_periph_clock_enable(RCU_USBFS);
 }
 
@@ -98,7 +87,6 @@ void usb_intr_config(void)
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
     nvic_irq_enable((uint8_t)USBFS_IRQn, 2U, 0U);
 
-#ifdef USB_LOW_POWER
     /* enable the power module clock */
     rcu_periph_clock_enable(RCU_PMU);
 
@@ -108,7 +96,6 @@ void usb_intr_config(void)
     exti_interrupt_enable(EXTI_18);
 
     nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 1U, 0U);
-#endif
 }
 
 /*!
@@ -119,9 +106,6 @@ void usb_intr_config(void)
 */
 void usb_timer_init (void)
 {
-    /* set the vector table base address at 0x08000000 */
-    nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x00U);
-
     /* configure the priority group to 2 bits */
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
 
@@ -231,32 +215,3 @@ static void hw_time_set(uint8_t unit)
     timer_enable(TIMER2);
 }
 
-#ifdef USE_IRC48M
-
-/*!
-    \brief      configure the CTC peripheral
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void ctc_config(void)
-{
-    /* configure CTC reference signal source prescaler */
-    ctc_refsource_prescaler_config(CTC_REFSOURCE_PSC_OFF);
-    /* select reference signal source */
-    ctc_refsource_signal_select(CTC_REFSOURCE_USB_SOF);
-    /* select reference signal source polarity */
-    ctc_refsource_polarity_config(CTC_REFSOURCE_POLARITY_RISING);
-    /* configure hardware automatically trim mode */
-    ctc_hardware_trim_mode_config(CTC_HARDWARE_TRIM_MODE_ENABLE);
-    
-    /* configure CTC counter reload value, Fclock/Fref-1 */
-    ctc_counter_reload_value_config(0xBB7FU);
-    /* configure clock trim base limit value, Fclock/Fref*0.0012/2 */
-    ctc_clock_limit_value_config(0x1DU);
-
-    /* CTC counter enable */
-    ctc_counter_enable();
-}
-
-#endif /* USE_IRC48M */

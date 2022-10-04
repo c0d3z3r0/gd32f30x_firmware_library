@@ -360,7 +360,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls>--c99</MiscControls>
-              <Define>USE_STDPERIPH_DRIVER,USE_USB_FS,GD32F30X_CL USE_USB_AUDIO_SPEAKER</Define>
+              <Define>USE_STDPERIPH_DRIVER,USE_USB_FS,GD32F30X_CL USE_USB_AD_MICPHONE</Define>
               <Undefine></Undefine>
               <IncludePath>..\inc;..\..\..\..\..\Firmware\CMSIS\GD\GD32F30x\Include;..\..\..\..\..\Firmware\GD32F30x_standard_peripheral\Include;..\..\..\..\..\Utilities;..\..\..\..\..\Firmware\GD32F30x_usbfs_library\driver\Include;..\..\..\..\..\Firmware\GD32F30x_usbfs_library\device\core\Include;..\..\..\..\..\Firmware\GD32F30x_usbfs_library\device\class\audio\Include;..\..\..\..\..\Firmware\GD32F30x_usbfs_library\ustd\common</IncludePath>
             </VariousControls>

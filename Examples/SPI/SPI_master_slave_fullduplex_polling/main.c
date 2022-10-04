@@ -38,15 +38,18 @@ OF SUCH DAMAGE.
 #include "gd32f30x.h"
 #include "gd32f307c_eval.h"
 
-#define arraysize         10
+#define SPI_CRC_ENABLE             0
+#define ARRAYSIZE                  10
+
 #define SET_SPI0_NSS_HIGH          gpio_bit_set(GPIOA,GPIO_PIN_3);
 #define SET_SPI0_NSS_LOW           gpio_bit_reset(GPIOA,GPIO_PIN_3);
 
 uint32_t send_n = 0, receive_n = 0;
-uint8_t spi0_send_array[arraysize] = {0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA};
-uint8_t spi2_send_array[arraysize] = {0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
-uint8_t spi0_receive_array[arraysize]; 
-uint8_t spi2_receive_array[arraysize];
+uint32_t crc_value1 = 0, crc_value2 = 0;
+uint8_t spi0_send_array[ARRAYSIZE] = {0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA};
+uint8_t spi2_send_array[ARRAYSIZE] = {0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
+uint8_t spi0_receive_array[ARRAYSIZE]; 
+uint8_t spi2_receive_array[ARRAYSIZE];
 ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint8_t length);
 
 void rcu_config(void);
@@ -79,8 +82,73 @@ int main(void)
 
     SET_SPI0_NSS_LOW
 
+#if SPI_CRC_ENABLE
+    /* wait for transmit completed */
+    while(send_n < (ARRAYSIZE - 1)) {
+        while(RESET == spi_i2s_flag_get(SPI2, SPI_FLAG_TBE)) {
+        }
+        spi_i2s_data_transmit(SPI2, spi2_send_array[send_n]);
+
+        while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_TBE)) {
+        }
+        spi_i2s_data_transmit(SPI0, spi0_send_array[send_n++]);
+
+        while(RESET == spi_i2s_flag_get(SPI2, SPI_FLAG_RBNE)) {
+        }
+        spi2_receive_array[receive_n] = spi_i2s_data_receive(SPI2);
+
+        while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_RBNE)) {
+        }
+        spi0_receive_array[receive_n++] = spi_i2s_data_receive(SPI0);
+    }
+
+    /* send the last data */
+    while(RESET == spi_i2s_flag_get(SPI2, SPI_FLAG_TBE)) {
+    }
+    spi_i2s_data_transmit(SPI2, spi2_send_array[send_n]);
+
+    while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_TBE)) {
+    }
+    spi_i2s_data_transmit(SPI0, spi0_send_array[send_n++]);
+
+    /* send the CRC value */
+    spi_crc_next(SPI2);
+    spi_crc_next(SPI0);
+
+    /* receive the last data */
+    while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_RBNE)) {
+    }
+    spi0_receive_array[receive_n] = spi_i2s_data_receive(SPI0);
+
+    while(RESET == spi_i2s_flag_get(SPI2, SPI_FLAG_RBNE)) {
+    }
+    spi2_receive_array[receive_n++] = spi_i2s_data_receive(SPI2);
+
+    /* receive the CRC value */
+    while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_RBNE)) {
+    }
+    while(RESET == spi_i2s_flag_get(SPI2, SPI_FLAG_RBNE)) {
+    }
+    crc_value1 = spi_i2s_data_receive(SPI0);
+    crc_value2 = spi_i2s_data_receive(SPI2);
+
+    SET_SPI0_NSS_HIGH
+
+    /* check the CRC error status  */
+    if(SET != spi_i2s_flag_get(SPI0, SPI_FLAG_CRCERR)) {
+        gd_eval_led_on(LED2);
+    } else {
+        gd_eval_led_off(LED2);
+    }
+
+    if(SET != spi_i2s_flag_get(SPI2, SPI_FLAG_CRCERR)) {
+        gd_eval_led_on(LED3);
+    } else {
+        gd_eval_led_off(LED3);
+    }
+#else
     /* wait for transmit complete */
-    while(send_n < arraysize){
+    while(send_n < ARRAYSIZE){
         while(RESET == spi_i2s_flag_get(SPI2, SPI_FLAG_TBE));
         spi_i2s_data_transmit(SPI2, spi2_send_array[send_n]);
         while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_TBE));
@@ -94,15 +162,18 @@ int main(void)
     SET_SPI0_NSS_HIGH
 
     /* compare receive data with send data */
-    if(memory_compare(spi2_receive_array, spi0_send_array, arraysize))
+    if(memory_compare(spi2_receive_array, spi0_send_array, ARRAYSIZE)) {
         gd_eval_led_on(LED2);
-    else
+    } else {
         gd_eval_led_off(LED2);
+    }
 
-    if(memory_compare(spi0_receive_array, spi2_send_array, arraysize))
+    if(memory_compare(spi0_receive_array, spi2_send_array, ARRAYSIZE)) {
         gd_eval_led_on(LED3);
-    else
+    } else {
         gd_eval_led_off(LED3);
+    }
+#endif /* enable CRC function */
 
     while(1);
 }
@@ -167,6 +238,14 @@ void spi_config(void)
     spi_init_struct.device_mode = SPI_SLAVE;
     spi_init_struct.nss         = SPI_NSS_HARD;
     spi_init(SPI2, &spi_init_struct);
+
+#if SPI_CRC_ENABLE
+    /* configure SPI CRC function */
+    spi_crc_polynomial_set(SPI0, 7);
+    spi_crc_polynomial_set(SPI2, 7);
+    spi_crc_on(SPI0);
+    spi_crc_on(SPI2);
+#endif /* enable CRC function */
 }
 
 /*!

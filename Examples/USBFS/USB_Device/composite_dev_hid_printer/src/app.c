@@ -3,10 +3,11 @@
     \brief   USB main routine for HID/printer composite device
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -60,17 +61,6 @@ int main(void)
 
     /* USB interrupt configure */
     usb_intr_config();
-    
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (RESET == ctc_flag_get(CTC_FLAG_CKOK)) {
-    }
-#endif /* USE_IRC48M */
 
     while(1){
     }

@@ -38,14 +38,15 @@ OF SUCH DAMAGE.
 #include "gd32f30x.h"
 #include "gd32f307c_eval.h"
 
-#define arraysize                  10
+#define SPI_CRC_ENABLE             1
+#define ARRAYSIZE                  10
 #define SET_SPI0_NSS_HIGH          gpio_bit_set(GPIOA,GPIO_PIN_3);
 #define SET_SPI0_NSS_LOW           gpio_bit_reset(GPIOA,GPIO_PIN_3);
 
-uint8_t spi0_send_array[arraysize] = {0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA};
-uint8_t spi2_send_array[arraysize] = {0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
-uint8_t spi0_receive_array[arraysize]; 
-uint8_t spi2_receive_array[arraysize];
+uint8_t spi0_send_array[ARRAYSIZE] = {0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA};
+uint8_t spi2_send_array[ARRAYSIZE] = {0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA};
+uint8_t spi0_receive_array[ARRAYSIZE]; 
+uint8_t spi2_receive_array[ARRAYSIZE];
 ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint8_t length);
 
 void rcu_config(void);
@@ -95,22 +96,41 @@ int main(void)
     spi_dma_enable(SPI0, SPI_DMA_RECEIVE);
 
     /* wait dma transmit complete */
-    while(!dma_flag_get(DMA0,DMA_CH2, DMA_INTF_FTFIF));
-    while(!dma_flag_get(DMA1,DMA_CH1, DMA_INTF_FTFIF));
-    while(!dma_flag_get(DMA1,DMA_CH0, DMA_INTF_FTFIF));
-    while(!dma_flag_get(DMA0,DMA_CH1, DMA_INTF_FTFIF));
+    while(!dma_flag_get(DMA0,DMA_CH2, DMA_INTF_FTFIF)) {
+    }
+    while(!dma_flag_get(DMA1,DMA_CH1, DMA_INTF_FTFIF)) {
+    }
+    while(!dma_flag_get(DMA1,DMA_CH0, DMA_INTF_FTFIF)) {
+    }
+    while(!dma_flag_get(DMA0,DMA_CH1, DMA_INTF_FTFIF)) {
+    }
 
     SET_SPI0_NSS_HIGH
 
+#if SPI_CRC_ENABLE
+    /* check the CRC error status  */
+    if(SET != spi_i2s_flag_get(SPI0, SPI_FLAG_CRCERR)) {
+        gd_eval_led_on(LED2);
+    } else {
+        gd_eval_led_off(LED2);
+    }
+
+    if(SET != spi_i2s_flag_get(SPI2, SPI_FLAG_CRCERR)) {
+        gd_eval_led_on(LED3);
+    } else {
+        gd_eval_led_off(LED3);
+    }
+#else
     /* compare receive data with send data */
-    if(memory_compare(spi2_receive_array, spi0_send_array, arraysize))
+    if(memory_compare(spi2_receive_array, spi0_send_array, ARRAYSIZE))
         gd_eval_led_on(LED2);
     else
         gd_eval_led_off(LED2);
-    if(memory_compare(spi0_receive_array, spi2_send_array, arraysize))
+    if(memory_compare(spi0_receive_array, spi2_send_array, ARRAYSIZE))
         gd_eval_led_on(LED3);
     else
         gd_eval_led_off(LED3);
+#endif /* enable CRC function */
 
     while(1);
 }
@@ -171,7 +191,7 @@ void dma_config(void)
     dma_init_struct.memory_width = DMA_MEMORY_WIDTH_8BIT;
     dma_init_struct.periph_width = DMA_PERIPHERAL_WIDTH_8BIT;
     dma_init_struct.priority     = DMA_PRIORITY_LOW;
-    dma_init_struct.number       = arraysize;
+    dma_init_struct.number       = ARRAYSIZE;
     dma_init_struct.periph_inc   = DMA_PERIPH_INCREASE_DISABLE;
     dma_init_struct.memory_inc   = DMA_MEMORY_INCREASE_ENABLE;
     dma_init(DMA0, DMA_CH2, &dma_init_struct);
@@ -207,6 +227,9 @@ void dma_config(void)
     dma_init_struct.memory_addr  = (uint32_t)spi2_receive_array;
     dma_init_struct.direction    = DMA_PERIPHERAL_TO_MEMORY;
     dma_init_struct.priority     = DMA_PRIORITY_ULTRA_HIGH;
+#if SPI_CRC_ENABLE
+    dma_init_struct.number       = ARRAYSIZE + 1;
+#endif /* enable CRC function */
     dma_init(DMA1, DMA_CH0, &dma_init_struct);
     /* configure DMA mode */
     dma_circulation_disable(DMA1, DMA_CH0);
@@ -237,6 +260,14 @@ void spi_config(void)
     spi_init_struct.device_mode = SPI_SLAVE;
     spi_init_struct.nss         = SPI_NSS_HARD;
     spi_init(SPI2, &spi_init_struct);
+
+#if SPI_CRC_ENABLE
+    /* configure SPI CRC function */
+    spi_crc_polynomial_set(SPI0, 7);
+    spi_crc_polynomial_set(SPI1, 7);
+    spi_crc_on(SPI0);
+    spi_crc_on(SPI2);
+#endif /* enable CRC function */
 }
 
 /*!

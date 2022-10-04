@@ -411,11 +411,6 @@
               <FilePath>..\src\app.c</FilePath>
             </File>
             <File>
-              <FileName>flash_if.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\flash_if.c</FilePath>
-            </File>
-            <File>
               <FileName>gd32f30x_hw.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\gd32f30x_hw.c</FilePath>
@@ -424,6 +419,31 @@
               <FileName>gd32f30x_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\gd32f30x_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>exmc_nandflash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\exmc_nandflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd25qxx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\gd25qxx.c</FilePath>
+            </File>
+            <File>
+              <FileName>inter_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\inter_flash_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>nand_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\nand_flash_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>nor_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\nor_flash_if.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -484,6 +504,16 @@
               <FileName>gd32f30x_ctc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_ctc.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f30x_exmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_exmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f30x_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_spi.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -546,9 +576,9 @@
               <FilePath>..\..\..\..\..\Firmware\GD32F30x_usbfs_library\device\class\dfu\Source\dfu_core.c</FilePath>
             </File>
             <File>
-              <FileName>dfu_mal.c</FileName>
+              <FileName>dfu_mem.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\Firmware\GD32F30x_usbfs_library\device\class\dfu\Source\dfu_mal.c</FilePath>
+              <FilePath>..\..\..\..\..\Firmware\GD32F30x_usbfs_library\device\class\dfu\Source\dfu_mem.c</FilePath>
             </File>
           </Files>
         </Group>

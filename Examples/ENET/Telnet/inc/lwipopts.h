@@ -98,7 +98,7 @@ OF SUCH DAMAGE.
 
 
 /* DHCP options */
-#define LWIP_DHCP               0                        /* define to 1 if you want DHCP configuration of interfaces,
+#define LWIP_DHCP               1                        /* define to 1 if you want DHCP configuration of interfaces,
                                                             DHCP is not implemented in lwIP 0.5.1, however, so
                                                             turning this on does currently not work. */
 

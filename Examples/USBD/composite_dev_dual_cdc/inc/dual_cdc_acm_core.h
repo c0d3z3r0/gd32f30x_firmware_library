@@ -3,10 +3,11 @@
     \brief   the header file of IAP driver
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -83,11 +84,17 @@ extern usb_desc dual_cdc_desc;
 extern usb_class dual_cdc_class;
 
 /* function declarations */
-/* receive CDC ACM data */
-void dual_cdc_data_receive(usb_dev *udev);
-/* send CDC ACM data */
-void dual_cdc_data_send(usb_dev *udev);
-/* check CDC ACM is ready for data transfer */
-uint8_t dual_cdc_check_ready(usb_dev *udev);
+/* receive CDC ACM 0 data */
+void cdc_data_receive0(usb_dev *udev);
+/* receive CDC ACM 1 data */
+void cdc_data_receive1(usb_dev *udev);
+/* send CDC ACM 0 data */
+void cdc_acm_data_send0(usb_dev *udev);
+/* send CDC ACM 1 data */
+void cdc_acm_data_send1(usb_dev *udev);
+/* check CDC ACM 0 is ready for data transfer */
+uint8_t cdc_check_ready0(usb_dev *udev);
+/* check CDC ACM 1 is ready for data transfer */
+uint8_t cdc_check_ready1(usb_dev *udev);
 
 #endif /* DUAL_CDC_ACM_CORE_H */

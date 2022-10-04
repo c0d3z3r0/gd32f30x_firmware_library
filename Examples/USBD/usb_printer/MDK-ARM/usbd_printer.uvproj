@@ -172,7 +172,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -484,6 +484,11 @@
               <FileName>gd32f30x_usart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_usart.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f30x_ctc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_ctc.c</FilePath>
             </File>
           </Files>
         </Group>

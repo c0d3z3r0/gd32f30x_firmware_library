@@ -93,10 +93,10 @@ int main(void)
     spi_dma_enable(SPI0, SPI_DMA_RECEIVE);
 
     /* wait dma transmit complete */
-    while(!dma_flag_get(DMA0,DMA_CH2,DMA_INTF_FTFIF));
-    while(!dma_flag_get(DMA1,DMA_CH1,DMA_INTF_FTFIF));
-    while(!dma_flag_get(DMA1,DMA_CH0,DMA_INTF_FTFIF));
-    while(!dma_flag_get(DMA0,DMA_CH1,DMA_INTF_FTFIF));
+    while(!dma_flag_get(DMA0,DMA_CH2,DMA_FLAG_FTF));
+    while(!dma_flag_get(DMA1,DMA_CH1,DMA_FLAG_FTF));
+    while(!dma_flag_get(DMA1,DMA_CH0,DMA_FLAG_FTF));
+    while(!dma_flag_get(DMA0,DMA_CH1,DMA_FLAG_FTF));
 
     /* compare receive data with send data */
     if(memory_compare(spi2_receive_array, spi0_send_array, arraysize))

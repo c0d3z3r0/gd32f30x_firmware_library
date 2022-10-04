@@ -46,8 +46,8 @@ OF SUCH DAMAGE.
 #include "main.h"
 #include "netconf.h"
 #include <stdio.h>
-#include "tcp_impl.h"
-#include "lwip/timers.h"
+#include "lwip/priv/tcp_priv.h"
+#include "lwip/timeouts.h"
 
 #define MAX_DHCP_TRIES        4
 
@@ -65,10 +65,10 @@ uint32_t dhcp_coarse_timer = 0;
 dhcp_state_enum dhcp_state = DHCP_START;
 #endif
 
-struct netif netif;
+struct netif g_mynetif;
 uint32_t tcp_timer = 0;
 uint32_t arp_timer = 0;
-uint32_t ip_address = 0;
+ip_addr_t ip_address = {0};
 
 void lwip_dhcp_process_handle(void);
 
@@ -80,9 +80,9 @@ void lwip_dhcp_process_handle(void);
 */
 void lwip_stack_init(void)
 {
-    struct ip_addr ipaddr;
-    struct ip_addr netmask;
-    struct ip_addr gw;
+    ip_addr_t ipaddr;
+    ip_addr_t netmask;
+    ip_addr_t gw;
 
     /* initializes the dynamic memory heap defined by MEM_SIZE */
     mem_init();
@@ -117,14 +117,18 @@ void lwip_stack_init(void)
 
     The init function pointer must point to a initialization function for
     your ethernet netif interface. The following code illustrates it's use.*/
-    netif_add(&netif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
+    netif_add(&g_mynetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
 
     /* registers the default network interface */
-    netif_set_default(&netif);
-    netif_set_status_callback(&netif, lwip_netif_status_callback);
+    netif_set_default(&g_mynetif);
+    netif_set_status_callback(&g_mynetif, lwip_netif_status_callback);
 
+#ifdef USE_DHCP
+    dhcp_start(&g_mynetif);
+#else
     /* when the netif is fully configured this function must be called */
-    netif_set_up(&netif);
+    netif_set_up(&g_mynetif);
+#endif /* USE_DHCP */
 }
 
 /*!
@@ -136,7 +140,7 @@ void lwip_stack_init(void)
 void lwip_pkt_handle(void)
 {
     /* read a received packet from the Ethernet buffers and send it to the lwIP for handling */
-    ethernetif_input(&netif);
+    ethernetif_input(&g_mynetif);
 }
 
 /*!
@@ -191,40 +195,39 @@ void lwip_periodic_handle(__IO uint32_t localtime)
 */
 void lwip_dhcp_process_handle(void)
 {
-    struct ip_addr ipaddr;
-    struct ip_addr netmask;
-    struct ip_addr gw;
+    ip_addr_t ipaddr;
+    ip_addr_t netmask;
+    ip_addr_t gw;
+    struct dhcp *dhcp_client;
 
     switch (dhcp_state){
     case DHCP_START:
-        dhcp_start(&netif);
-        ip_address = 0;
+        dhcp_start(&g_mynetif);
+
         dhcp_state = DHCP_WAIT_ADDRESS;
         break;
 
     case DHCP_WAIT_ADDRESS:
         /* read the new IP address */
-        ip_address = netif.ip_addr.addr;
+        ip_address.addr = g_mynetif.ip_addr.addr;
 
-        if (ip_address!=0){ 
+        if(0 != ip_address.addr) {
             dhcp_state = DHCP_ADDRESS_ASSIGNED;
-            /* stop DHCP */
-            dhcp_stop(&netif);
 
             printf("\r\nDHCP -- eval board ip address: %d.%d.%d.%d \r\n", ip4_addr1_16(&ip_address), \
                    ip4_addr2_16(&ip_address), ip4_addr3_16(&ip_address), ip4_addr4_16(&ip_address));          
         }else{
             /* DHCP timeout */
-            if (netif.dhcp->tries > MAX_DHCP_TRIES){
+            if(dhcp_client->tries > MAX_DHCP_TRIES) {
               dhcp_state = DHCP_TIMEOUT;
               /* stop DHCP */
-              dhcp_stop(&netif);
+              dhcp_stop(&g_mynetif);
 
               /* static address used */
               IP4_ADDR(&ipaddr, IP_ADDR0 ,IP_ADDR1 , IP_ADDR2 , IP_ADDR3 );
               IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
               IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-              netif_set_addr(&netif, &ipaddr , &netmask, &gw);
+              netif_set_addr(&g_mynetif, &ipaddr , &netmask, &gw);
             }
         }
         break;

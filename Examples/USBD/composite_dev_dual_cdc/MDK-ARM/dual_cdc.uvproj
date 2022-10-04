@@ -480,6 +480,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>gd32f30x_ctc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_ctc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

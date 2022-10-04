@@ -39,7 +39,7 @@ OF SUCH DAMAGE.
 #include "netconf.h"
 #include "main.h"
 #include "lwip/tcp.h"
-#include "lwip/timers.h"
+#include "lwip/timeouts.h"
 #include "gd32f307c_eval.h"
 #include "hello_gigadevice.h"
 

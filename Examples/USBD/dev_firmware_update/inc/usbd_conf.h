@@ -3,10 +3,11 @@
     \brief   usb device driver basic configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -37,9 +38,20 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x.h"
 #include "gd32f303e_eval.h"
+#include "dfu_mem.h"
+#include "exmc_nandflash.h"
+#include "nor_flash_if.h"
+#include "nand_flash_if.h"
+#include "inter_flash_if.h"
 
 #define USBD_CFG_MAX_NUM                  1U
 #define USBD_ITF_MAX_NUM                  1U
+#define USB_STR_DESC_MAX_SIZE         64U
+
+#define DFU_MAX_ALT_ITF_NUM           3
+#define STR_IDX_ALT_ITF0              5
+#define STR_IDX_ALT_ITF1              6
+#define STR_IDX_ALT_ITF2              7
 
 #define USBD_DFU_INTERFACE                0U
 
@@ -49,6 +61,7 @@ OF SUCH DAMAGE.
 /* USB user string supported */
 #define USB_SUPPORT_USER_STRING_DESC
 
+#define MAX_USED_MEMORY_MEDIA             3U
 
 /* DFU maximum data packet size */
 #define TRANSFER_SIZE                     2048U
@@ -74,10 +87,10 @@ OF SUCH DAMAGE.
 /* Base address of the allocation buffer, used for buffer descriptor table and packet memory */
 #define BTABLE_OFFSET                      (0x0000U)
 
-#define USB_STRING_COUNT                   6U
+#define USB_STRING_COUNT                   8
 
 #define USB_PULLUP                         GPIOG
 #define USB_PULLUP_PIN                     GPIO_PIN_8
-#define RCC_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
+#define RCU_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
 
 #endif /* __USBD_CONF_H */

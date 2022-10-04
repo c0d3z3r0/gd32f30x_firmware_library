@@ -3,10 +3,11 @@
     /brief   usb device driver basic configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -78,8 +79,8 @@ OF SUCH DAMAGE.
 /* base address of the allocation buffer, used for buffer descriptor table and packet memory */
 #define BTABLE_OFFSET                     (0x0000U)
 
-#define USB_PULLUP                        GPIOG
-#define USB_PULLUP_PIN                    GPIO_PIN_8
-#define RCC_AHBPeriph_GPIO_PULLUP         RCU_GPIOG
+#define USB_PULLUP                         GPIOG
+#define USB_PULLUP_PIN                     GPIO_PIN_8
+#define RCU_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
 
 #endif /* __USBD_CONF_H */

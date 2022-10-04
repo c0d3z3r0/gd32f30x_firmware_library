@@ -719,7 +719,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\linker\GD\GD32F303xE.icf</state>
+          <state>$TOOLKIT_DIR$\config\linker\GD\GD32F303xB.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1030,9 +1030,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_core.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_data.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_scsi.c</name>

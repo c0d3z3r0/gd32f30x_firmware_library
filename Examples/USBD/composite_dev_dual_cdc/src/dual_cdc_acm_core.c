@@ -3,10 +3,11 @@
     \brief   CDC ACM driver
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -163,7 +164,7 @@ usb_dual_cdc_desc_config_set dual_cdc_config_desc =
             .bLength         = sizeof(usb_desc_ep), 
             .bDescriptorType = USB_DESCTYPE_EP
          },
-        .bEndpointAddress    = CDC0_CMD_EP,
+        .bEndpointAddress    = CDC_ACM0_CMD_EP,
         .bmAttributes        = 0x03U,
         .wMaxPacketSize      = CDC_ACM_CMD_PACKET_SIZE,
         .bInterval           = 0x0AU
@@ -192,7 +193,7 @@ usb_dual_cdc_desc_config_set dual_cdc_config_desc =
              .bLength         = sizeof(usb_desc_ep), 
              .bDescriptorType = USB_DESCTYPE_EP 
          },
-        .bEndpointAddress     = CDC0_OUT_EP,
+        .bEndpointAddress     = CDC_ACM0_DATA_OUT_EP,
         .bmAttributes         = 0x02U,
         .wMaxPacketSize       = CDC_ACM_DATA_PACKET_SIZE,
         .bInterval            = 0x00U
@@ -205,7 +206,7 @@ usb_dual_cdc_desc_config_set dual_cdc_config_desc =
              .bLength         = sizeof(usb_desc_ep), 
              .bDescriptorType = USB_DESCTYPE_EP 
          },
-        .bEndpointAddress     = CDC0_IN_EP,
+        .bEndpointAddress     = CDC_ACM0_DATA_IN_EP,
         .bmAttributes         = 0x02U,
         .wMaxPacketSize       = CDC_ACM_DATA_PACKET_SIZE,
         .bInterval            = 0x00U
@@ -295,7 +296,7 @@ usb_dual_cdc_desc_config_set dual_cdc_config_desc =
             .bLength         = sizeof(usb_desc_ep), 
             .bDescriptorType = USB_DESCTYPE_EP
          },
-        .bEndpointAddress    = CDC1_CMD_EP,
+        .bEndpointAddress    = CDC_ACM1_CMD_EP,
         .bmAttributes        = 0x03U,
         .wMaxPacketSize      = CDC_ACM_CMD_PACKET_SIZE,
         .bInterval           = 0x0AU
@@ -324,7 +325,7 @@ usb_dual_cdc_desc_config_set dual_cdc_config_desc =
              .bLength         = sizeof(usb_desc_ep), 
              .bDescriptorType = USB_DESCTYPE_EP 
          },
-        .bEndpointAddress     = CDC1_OUT_EP,
+        .bEndpointAddress     = CDC_ACM1_DATA_OUT_EP,
         .bmAttributes         = 0x02U,
         .wMaxPacketSize       = CDC_ACM_DATA_PACKET_SIZE,
         .bInterval            = 0x00U
@@ -337,7 +338,7 @@ usb_dual_cdc_desc_config_set dual_cdc_config_desc =
              .bLength         = sizeof(usb_desc_ep), 
              .bDescriptorType = USB_DESCTYPE_EP 
          },
-        .bEndpointAddress     = CDC1_IN_EP,
+        .bEndpointAddress     = CDC_ACM1_DATA_IN_EP,
         .bmAttributes         = 0x02U,
         .wMaxPacketSize       = CDC_ACM_DATA_PACKET_SIZE,
         .bInterval            = 0x00U
@@ -422,51 +423,102 @@ usb_class dual_cdc_class = {
 };
 
 /*!
-    \brief      to receive CDC ACM data
+    \brief      receive CDC ACM 0 data
     \param[in]  udev: pointer to USB device instance
     \param[out] none
     \retval     USB device operation status
 */
-void dual_cdc_data_receive(usb_dev *udev)
+void cdc_data_receive0(usb_dev *udev)
 {
     usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
 
     cdc->packet_receive = 0U;
     cdc->pre_packet_send = 0U;
 
-    usbd_ep_recev(udev, CDC0_OUT_EP, (uint8_t*)(cdc->data), USB_CDC_RX_LEN);
-    usbd_ep_recev(udev, CDC1_OUT_EP, (uint8_t*)(cdc->data), USB_CDC_RX_LEN);
+    usbd_ep_recev(udev, CDC_ACM0_DATA_OUT_EP, (uint8_t*)(cdc->data), USB_CDC_RX_LEN);
 }
 
 /*!
-    \brief      send CDC ACM data
+    \brief      receive CDC ACM 1 data
     \param[in]  udev: pointer to USB device instance
     \param[out] none
     \retval     USB device operation status
 */
-void dual_cdc_data_send (usb_dev *udev)
+void cdc_data_receive1(usb_dev *udev)
+{
+    usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[1];
+
+    cdc->packet_receive = 0U;
+    cdc->pre_packet_send = 0U;
+
+    usbd_ep_recev(udev, CDC_ACM1_DATA_OUT_EP, (uint8_t*)(cdc->data), USB_CDC_RX_LEN);
+}
+
+/*!
+    \brief      send CDC ACM 0 data
+    \param[in]  udev: pointer to USB device instance
+    \param[out] none
+    \retval     USB device operation status
+*/
+void cdc_acm_data_send0(usb_dev *udev)
 {
     usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
     uint32_t data_len = cdc->receive_length;
 
     if ((0U != data_len) && (1U == cdc->packet_sent)) {
         cdc->packet_sent = 0U;
-        usbd_ep_send(udev, CDC0_IN_EP, (uint8_t*)(cdc->data), (uint16_t)data_len);
-        usbd_ep_send(udev, CDC1_IN_EP, (uint8_t*)(cdc->data), (uint16_t)data_len);
+        usbd_ep_send(udev, CDC_ACM0_DATA_IN_EP, (uint8_t*)(cdc->data), (uint16_t)data_len);
         cdc->receive_length = 0U;
     }
 }
 
 /*!
-    \brief      check cdc acm is ready for data transfer
+    \brief      send CDC ACM 1 data
+    \param[in]  udev: pointer to USB device instance
+    \param[out] none
+    \retval     USB device operation status
+*/
+void cdc_acm_data_send1(usb_dev *udev)
+{
+    usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[1];
+    uint32_t data_len = cdc->receive_length;
+
+    if ((0U != data_len) && (1U == cdc->packet_sent)) {
+        cdc->packet_sent = 0U;
+        usbd_ep_send(udev, CDC_ACM1_DATA_IN_EP, (uint8_t*)(cdc->data), (uint16_t)data_len);
+        cdc->receive_length = 0U;
+    }
+}
+
+/*!
+    \brief      check CDC ACM 0 is ready for data transfer
     \param[in]  udev: pointer to USB device instance
     \param[out] none
     \retval     0 if cdc is ready, 5 else
 */
-uint8_t dual_cdc_check_ready(usb_dev *udev)
+uint8_t cdc_check_ready0(usb_dev *udev)
 {
     if (NULL != udev->class_data[0]) {
         usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
+
+        if ((1U == cdc->packet_receive) && (1U == cdc->pre_packet_send)) {
+            return 0U;
+        }
+    }
+
+    return 5U;
+}
+
+/*!
+    \brief      check CDC ACM 1 is ready for data transfer
+    \param[in]  udev: pointer to USB device instance
+    \param[out] none
+    \retval     0 if cdc is ready, 5 else
+*/
+uint8_t cdc_check_ready1(usb_dev *udev)
+{
+    if (NULL != udev->class_data[1]) {
+        usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[1];
 
         if ((1U == cdc->packet_receive) && (1U == cdc->pre_packet_send)) {
             return 0U;
@@ -485,7 +537,7 @@ uint8_t dual_cdc_check_ready(usb_dev *udev)
 */
 static uint8_t dual_cdc_init (usb_dev *udev, uint8_t config_index)
 {
-    static usb_cdc_handler cdc_handler;
+    static usb_cdc_handler cdc_handler0, cdc_handler1;
 
     /* initialize the data Tx/Rx endpoint */
     usbd_ep_init(udev, EP_BUF_SNG, BULK0_TX_ADDR, &(dual_cdc_config_desc.cdc_loopback_in_endpoint0));
@@ -498,26 +550,41 @@ static uint8_t dual_cdc_init (usb_dev *udev, uint8_t config_index)
     usbd_ep_init(udev, EP_BUF_SNG, INT0_TX_ADDR, &(dual_cdc_config_desc.cdc_loopback_cmd_endpoint0));
     usbd_ep_init(udev, EP_BUF_SNG, INT1_TX_ADDR, &(dual_cdc_config_desc.cdc_loopback_cmd_endpoint1));
 
-    udev->ep_transc[EP_ID(CDC0_IN_EP)][TRANSC_IN] = dual_cdc_class.data_in;
-    udev->ep_transc[CDC0_OUT_EP][TRANSC_OUT] = dual_cdc_class.data_out;
+    udev->ep_transc[EP_ID(CDC_ACM0_DATA_IN_EP)][TRANSC_IN] = dual_cdc_class.data_in;
+    udev->ep_transc[CDC_ACM0_DATA_OUT_EP][TRANSC_OUT] = dual_cdc_class.data_out;
 
-    udev->ep_transc[EP_ID(CDC1_IN_EP)][TRANSC_IN] = dual_cdc_class.data_in;
-    udev->ep_transc[CDC1_OUT_EP][TRANSC_OUT] = dual_cdc_class.data_out;
+    udev->ep_transc[EP_ID(CDC_ACM1_DATA_IN_EP)][TRANSC_IN] = dual_cdc_class.data_in;
+    udev->ep_transc[CDC_ACM1_DATA_OUT_EP][TRANSC_OUT] = dual_cdc_class.data_out;
 
-    /* initialize cdc handler structure */
-    cdc_handler.packet_receive = 0U;
-    cdc_handler.packet_sent = 1U;
-    cdc_handler.pre_packet_send = 1U; 
-    cdc_handler.receive_length = 0U;
+    /* initialize cdc handler 0 structure */
+    cdc_handler0.packet_receive = 0U;
+    cdc_handler0.packet_sent = 1U;
+    cdc_handler0.pre_packet_send = 1U;
+    cdc_handler0.receive_length = 0U;
 
-    cdc_handler.line_coding = (acm_line){
-        .dwDTERate   = 115200U,
-        .bCharFormat = 0U,
-        .bParityType = 0U,
-        .bDataBits   = 0x08U
+    cdc_handler0.line_coding = (acm_line){
+        .dwDTERate   = 115200,
+        .bCharFormat = 0,
+        .bParityType = 0,
+        .bDataBits   = 0x08
     };
 
-    udev->class_data[0] = (void *)&cdc_handler;
+    udev->class_data[0] = (void *)&cdc_handler0;
+
+    /* initialize cdc handler 1 structure */
+    cdc_handler1.packet_receive = 0U;
+    cdc_handler1.packet_sent = 1U;
+    cdc_handler1.pre_packet_send = 1U;
+    cdc_handler1.receive_length = 0U;
+
+    cdc_handler1.line_coding = (acm_line){
+        .dwDTERate   = 115200,
+        .bCharFormat = 0,
+        .bParityType = 0,
+        .bDataBits   = 0x08
+    };
+
+    udev->class_data[1] = (void *)&cdc_handler1;
 
     return USBD_OK;
 }
@@ -532,15 +599,15 @@ static uint8_t dual_cdc_init (usb_dev *udev, uint8_t config_index)
 static uint8_t dual_cdc_deinit (usb_dev *udev, uint8_t config_index)
 {
     /* deinitialize the data Tx/Rx endpoint */
-    usbd_ep_deinit(udev, CDC0_IN_EP);
-    usbd_ep_deinit(udev, CDC0_OUT_EP);
+    usbd_ep_deinit(udev, CDC_ACM0_DATA_IN_EP);
+    usbd_ep_deinit(udev, CDC_ACM0_DATA_OUT_EP);
 
-    usbd_ep_deinit(udev, CDC1_IN_EP);
-    usbd_ep_deinit(udev, CDC1_OUT_EP);
+    usbd_ep_deinit(udev, CDC_ACM1_DATA_IN_EP);
+    usbd_ep_deinit(udev, CDC_ACM1_DATA_OUT_EP);
 
     /* deinitialize the command Tx endpoint */
-    usbd_ep_deinit(udev, CDC0_CMD_EP);
-    usbd_ep_deinit(udev, CDC1_CMD_EP);
+    usbd_ep_deinit(udev, CDC_ACM0_CMD_EP);
+    usbd_ep_deinit(udev, CDC_ACM1_CMD_EP);
 
     return USBD_OK;
 }
@@ -553,11 +620,15 @@ static uint8_t dual_cdc_deinit (usb_dev *udev, uint8_t config_index)
 */
 static uint8_t dual_cdc_ctlx_out (usb_dev *udev)
 {
-    usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
-
+    usb_cdc_handler *cdc0 = (usb_cdc_handler *)udev->class_data[0];
+    usb_cdc_handler *cdc1 = (usb_cdc_handler *)udev->class_data[1];
+    
     if (NO_CMD != udev->class_core->req_cmd) {
-        cdc->packet_receive = 1U;
-        cdc->pre_packet_send = 1U;
+        cdc0->packet_receive = 1U;
+        cdc0->pre_packet_send = 1U;
+
+        cdc1->packet_receive = 1U;
+        cdc1->pre_packet_send = 1U;
 
         udev->class_core->req_cmd = NO_CMD;
     }
@@ -574,8 +645,14 @@ static uint8_t dual_cdc_ctlx_out (usb_dev *udev)
 */
 static void dual_cdc_data_in (usb_dev *udev, uint8_t ep_num)
 {
+    usb_cdc_handler *cdc = NULL;
     usb_transc *transc = &udev->transc_in[ep_num];
-    usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
+
+   if ((CDC_ACM0_DATA_IN_EP & 0x7F) == ep_num) {
+        cdc = (usb_cdc_handler *)udev->class_data[0];
+    } else {
+        cdc = (usb_cdc_handler *)udev->class_data[1];
+    }
 
     if (transc->xfer_count == transc->max_len) {
         usbd_ep_send(udev, EP_ID(ep_num), NULL, 0U);
@@ -594,7 +671,13 @@ static void dual_cdc_data_in (usb_dev *udev, uint8_t ep_num)
 */
 static void dual_cdc_data_out (usb_dev *udev, uint8_t ep_num)
 {
-    usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
+    usb_cdc_handler *cdc = NULL;
+
+   if (ep_num == (CDC_ACM0_DATA_OUT_EP & 0x7F)) {
+        cdc = (usb_cdc_handler *)udev->class_data[0];
+    } else {
+        cdc = (usb_cdc_handler *)udev->class_data[1];
+    }
 
     cdc->packet_receive = 1U;
 
@@ -610,8 +693,14 @@ static void dual_cdc_data_out (usb_dev *udev, uint8_t ep_num)
 */
 static uint8_t dual_cdc_req_handler (usb_dev *udev, usb_req *req)
 {
+    usb_cdc_handler *cdc = NULL;
     uint8_t status = REQ_NOTSUPP, noti_buf[10] = {0U};
-    usb_cdc_handler *cdc = (usb_cdc_handler *)udev->class_data[0];
+
+    if(0x00 == (req->wIndex & 0xFF)){
+        cdc = (usb_cdc_handler *)udev->class_data[0];
+    }else {
+        cdc = (usb_cdc_handler *)udev->class_data[1];
+    }
 
     acm_notification *notif = (void *)noti_buf;
 

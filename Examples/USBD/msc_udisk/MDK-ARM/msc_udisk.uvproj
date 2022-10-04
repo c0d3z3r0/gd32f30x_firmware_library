@@ -495,6 +495,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>gd32f30x_ctc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_ctc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -559,11 +564,6 @@
               <FileName>usbd_msc_core.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_core.c</FilePath>
-            </File>
-            <File>
-              <FileName>usbd_msc_data.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_data.c</FilePath>
             </File>
             <File>
               <FileName>usbd_msc_scsi.c</FileName>

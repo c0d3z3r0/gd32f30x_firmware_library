@@ -172,7 +172,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3></Flash3>
+          <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -420,11 +420,6 @@
               <FileType>1</FileType>
               <FilePath>..\src\gd32f30x_usbd_hw.c</FilePath>
             </File>
-            <File>
-              <FileName>gd32f303c_audio_codec.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\gd32f303c_audio_codec.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -490,6 +485,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_spi.c</FilePath>
             </File>
+            <File>
+              <FileName>gd32f30x_ctc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\Firmware\GD32F30x_standard_peripheral\Source\gd32f30x_ctc.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -499,6 +499,11 @@
               <FileName>gd32f303e_eval.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\Utilities\gd32f303e_eval.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f303c_audio_codec.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\gd32f303c_audio_codec.c</FilePath>
             </File>
           </Files>
         </Group>

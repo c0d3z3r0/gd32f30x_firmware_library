@@ -3,10 +3,11 @@
     \brief   usb device driver basic configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -49,14 +50,14 @@ OF SUCH DAMAGE.
 /* #define USBD_SELF_POWERED */
 
 /* endpoint count used by the CDC ACM device 0 */
-#define CDC0_CMD_EP                         EP_IN(3U)
-#define CDC0_IN_EP                          EP_IN(1U)
-#define CDC0_OUT_EP                         EP_OUT(1U)
+#define CDC_ACM0_CMD_EP                    EP_IN(3U)
+#define CDC_ACM0_DATA_IN_EP                EP_IN(1U)
+#define CDC_ACM0_DATA_OUT_EP               EP_OUT(1U)
 
-/* endpoint count used by the CDC ACM device 0 */
-#define CDC1_CMD_EP                         EP_IN(4U)
-#define CDC1_IN_EP                          EP_IN(2U)
-#define CDC1_OUT_EP                         EP_OUT(2U)
+/* endpoint count used by the CDC ACM device 1 */
+#define CDC_ACM1_CMD_EP                    EP_IN(4U)
+#define CDC_ACM1_DATA_IN_EP                EP_IN(2U)
+#define CDC_ACM1_DATA_OUT_EP               EP_OUT(2U)
 
 /* endpoint0, Rx/Tx buffers address offset */
 #define EP0_RX_ADDR                        (0x40U)
@@ -92,6 +93,6 @@ OF SUCH DAMAGE.
 
 #define USB_PULLUP                         GPIOG
 #define USB_PULLUP_PIN                     GPIO_PIN_8
-#define RCC_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
+#define RCU_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
 
 #endif /* USBD_CONF_H */

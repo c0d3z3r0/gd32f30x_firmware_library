@@ -3,10 +3,11 @@
     \brief   USB dual CDC ACM device
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -65,10 +66,16 @@ int main(void)
     }
 
     while (1) {
-        if (0U == dual_cdc_check_ready(&usbd_dual_cdc)) {
-            dual_cdc_data_receive(&usbd_dual_cdc);
+        if (0U == cdc_check_ready0(&usbd_dual_cdc)) {
+            cdc_data_receive0(&usbd_dual_cdc);
         } else {
-            dual_cdc_data_send(&usbd_dual_cdc);
+            cdc_acm_data_send0(&usbd_dual_cdc);
+        }
+
+        if (0U == cdc_check_ready1(&usbd_dual_cdc)) {
+            cdc_data_receive1(&usbd_dual_cdc);
+        } else {
+            cdc_acm_data_send1(&usbd_dual_cdc);
         }
     }
 }

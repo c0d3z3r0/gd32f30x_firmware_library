@@ -39,12 +39,14 @@ OF SUCH DAMAGE.
 #include "gd32f30x_it.h"
 #include "gd32f307c_eval.h"
 
-#define arraysize                      10
+#define SPI_CRC_ENABLE                 1
+#define ARRAYSIZE                      10
+
 #define SET_SPI0_NSS_HIGH              gpio_bit_set(GPIOA,GPIO_PIN_3);
 #define SET_SPI0_NSS_LOW               gpio_bit_reset(GPIOA,GPIO_PIN_3);
 __IO uint32_t send_n = 0, receive_n = 0;
-uint8_t spi0_send_array[arraysize] = {0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA};
-uint8_t spi2_receive_array[arraysize];
+uint8_t spi0_send_array[ARRAYSIZE] = {0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA};
+uint8_t spi2_receive_array[ARRAYSIZE];
 ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint8_t length);
 
 void rcu_config(void);
@@ -87,15 +89,24 @@ int main(void)
     spi_enable(SPI0);
 
     /* wait transmit complete */
-    while(receive_n < arraysize);
+    while(receive_n < ARRAYSIZE);
 
     SET_SPI0_NSS_HIGH
 
+#if SPI_CRC_ENABLE
+    /* check the CRC error status  */
+    if(SET != spi_i2s_flag_get(SPI2, SPI_FLAG_CRCERR)) {
+        gd_eval_led_on(LED2);
+    } else {
+        gd_eval_led_off(LED2);
+    }
+#else
     /* compare receive data with send data */
-    if(memory_compare(spi2_receive_array, spi0_send_array, arraysize))
+    if(memory_compare(spi2_receive_array, spi0_send_array, ARRAYSIZE))
         gd_eval_led_on(LED2);
     else
         gd_eval_led_off(LED2);
+#endif /* enable CRC function */
 
     while(1);
    
@@ -151,7 +162,7 @@ void spi_config(void)
     spi_init_struct.frame_size           = SPI_FRAMESIZE_8BIT;
     spi_init_struct.clock_polarity_phase = SPI_CK_PL_HIGH_PH_2EDGE;
     spi_init_struct.nss                  = SPI_NSS_SOFT;
-    spi_init_struct.prescale             = SPI_PSC_8;
+    spi_init_struct.prescale             = SPI_PSC_256;
     spi_init_struct.endian               = SPI_ENDIAN_MSB;
     spi_init(SPI0, &spi_init_struct);
 
@@ -160,6 +171,13 @@ void spi_config(void)
     spi_init_struct.device_mode = SPI_SLAVE;
     spi_init_struct.nss         = SPI_NSS_HARD;
     spi_init(SPI2, &spi_init_struct);
+#if SPI_CRC_ENABLE
+    /* configure SPI CRC function */
+    spi_crc_polynomial_set(SPI0, 7);
+    spi_crc_polynomial_set(SPI2, 7);
+    spi_crc_on(SPI0);
+    spi_crc_on(SPI2);
+#endif /* enable CRC function */
 }
 
 /*!

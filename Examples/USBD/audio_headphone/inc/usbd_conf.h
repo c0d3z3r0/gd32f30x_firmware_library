@@ -3,10 +3,11 @@
     \brief   usb device driver basic configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -42,27 +43,37 @@ OF SUCH DAMAGE.
 #define USBD_CFG_MAX_NUM                1U
 #define USBD_ITF_MAX_NUM                2U
 
-#define USBD_AUDIO_INTERFACE            0U
+#define USBD_AD_INTERFACE               0U
 
 /* class layer parameter */
-#define AUDIO_TOTAL_IF_NUM              0x02U
+#define AD_TOTAL_IF_NUM                 0x02U
 
-#define AUDIO_OUT_EP                    EP_OUT(1)
+#define AD_OUT_EP                       EP_OUT(1)
 
 /* endpoint0, Rx/Tx buffers address offset */
 #define EP0_RX_ADDR                     (0x20U)
 #define EP0_TX_ADDR                     (0x60U)
 
-#define AUDIO_BUF_ADDR                  (AUDIO_BUF0_ADDR | (AUDIO_BUF1_ADDR << 16U))
+#define AD_BUF_ADDR                     (AD_BUF0_ADDR | (AD_BUF1_ADDR << 16U))
 
-#define AUDIO_BUF0_ADDR                 (0xA0U)
-#define AUDIO_BUF1_ADDR                 (0xF0U)
+#define AD_BUF0_ADDR                    (0xA0U)
+#define AD_BUF1_ADDR                    (0xF0U)
+
+/* speaker parameter */
+#define USBD_SPEAKER_FREQ               USBD_AD_FREQ_16K
+#define SPEAKER_OUT_BIT_RESOLUTION      16
+#define SPEAKER_OUT_CHANNEL_NBR         2 /* Mono = 1, Stereo = 2 */
+#define SPEAKER_OUT_PACKET              (uint32_t)(((USBD_SPEAKER_FREQ * \
+                                                     (SPEAKER_OUT_BIT_RESOLUTION/8) *\
+                                                       SPEAKER_OUT_CHANNEL_NBR) /1000))
+
+#define SPEAKER_OUT_MAX_PACKET          SPEAKER_OUT_PACKET
 
 /* Audio frequency in Hz */
-#define USBD_AUDIO_FREQ_48K             48000U
-#define USBD_AUDIO_FREQ_44K             44100U
-#define USBD_AUDIO_FREQ_16K             16000U
-#define USBD_AUDIO_FREQ_22K             22000U
+#define USBD_AD_FREQ_48K                48000U
+#define USBD_AD_FREQ_44K                44100U
+#define USBD_AD_FREQ_16K                16000U
+#define USBD_AD_FREQ_22K                22000U
 
 #define DEFAULT_VOLUME                  65U    /* Default volume in % (Mute=0%, Max = 100%) in Logarithmic values.
                                                  To get accurate volume variations, it is possible to use a logarithmic
@@ -82,6 +93,6 @@ OF SUCH DAMAGE.
 
 #define USB_PULLUP                      GPIOG
 #define USB_PULLUP_PIN                  GPIO_PIN_8
-#define RCC_AHBPeriph_GPIO_PULLUP       RCU_GPIOG
+#define RCU_AHBPeriph_GPIO_PULLUP       RCU_GPIOG
 
 #endif /* __USBD_CONF_H */

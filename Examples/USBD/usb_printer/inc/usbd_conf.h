@@ -3,10 +3,11 @@
     \brief   usb device driver basic configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -37,6 +38,7 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x.h"
 #include "gd32f303e_eval.h"
+
 
 #define USBD_CFG_MAX_NUM                   1U
 #define USBD_ITF_MAX_NUM                   1U
@@ -72,6 +74,6 @@ OF SUCH DAMAGE.
 
 #define USB_PULLUP                         GPIOG
 #define USB_PULLUP_PIN                     GPIO_PIN_8
-#define RCC_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
+#define RCU_AHBPeriph_GPIO_PULLUP          RCU_GPIOG
 
 #endif /* __USBD_CONF_H */

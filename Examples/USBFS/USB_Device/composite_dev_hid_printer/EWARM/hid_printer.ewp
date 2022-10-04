@@ -961,6 +961,9 @@
       <name>$PROJ_DIR$\..\src\app.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\src\custom_hid_itf.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\src\gd32f30x_hw.c</name>
     </file>
     <file>

@@ -3,10 +3,11 @@
     \brief   Description of the USB CDC_ACM demo
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -33,7 +34,7 @@ OF SUCH DAMAGE.
 */
 
   The target of this example is to read data from and write data to USB devices using 
-the CDC protocol.
+the CDC protocol. And the USB device is a composite dual CDC device.
 
   It makes the USB device look like a serial port (NO serial cable connectors: You 
 can see the data transferred to and from via USB instead of USB-to-USART bridge connection). 

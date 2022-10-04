@@ -4,10 +4,11 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
     \version 2021-06-22, V3.0.1, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -189,9 +190,6 @@ void usb_vbus_config (void)
 */
 void usb_timer_init (void)
 {
-    /* set the vector table base address at 0x08000000 */
-    nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x00U);
-
     /* configure the priority group to 2 bits */
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
 

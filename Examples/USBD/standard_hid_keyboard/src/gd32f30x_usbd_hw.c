@@ -3,10 +3,11 @@
     \brief   usbd hardware configure file
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -45,7 +46,7 @@ void rcu_config(void)
     uint32_t system_clock = rcu_clock_freq_get(CK_SYS);
 
     /* enable USB pull-up pin clock */ 
-    rcu_periph_clock_enable(RCC_AHBPeriph_GPIO_PULLUP);
+    rcu_periph_clock_enable(RCU_AHBPeriph_GPIO_PULLUP);
 
     if (48000000U == system_clock) {
         rcu_usb_clock_config(RCU_CKUSB_CKPLL_DIV1);
@@ -96,3 +97,4 @@ void nvic_config(void)
     /* enable the USB Wake-up interrupt */
     nvic_irq_enable((uint8_t)USBD_WKUP_IRQn, 0U, 0U);
 }
+

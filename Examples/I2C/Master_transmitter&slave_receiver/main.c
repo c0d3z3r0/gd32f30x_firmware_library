@@ -11,27 +11,27 @@
 /*
     Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
-    Redistribution and use in source and binary forms, with or without modification, 
+    Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, this 
+    1. Redistributions of source code must retain the above copyright notice, this
        list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice, 
-       this list of conditions and the following disclaimer in the documentation 
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
        and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors 
-       may be used to endorse or promote products derived from this software without 
+    3. Neither the name of the copyright holder nor the names of its contributors
+       may be used to endorse or promote products derived from this software without
        specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 */
 
@@ -49,7 +49,7 @@ __IO ErrStatus state = ERROR;
 void rcu_config(void);
 void gpio_config(void);
 void i2c_config(void);
-ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint16_t length);
+ErrStatus memory_compare(uint8_t *src, uint8_t *dst, uint16_t length);
 
 /*!
     \brief      main function
@@ -59,15 +59,15 @@ ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint16_t length);
 */
 int main(void)
 {
-    int i;
+    uint8_t i;
     gd_eval_led_init(LED2);
     gd_eval_led_init(LED3);
     rcu_config();
     gpio_config();
     i2c_config();
 
-    for(i=0;i<16;i++){
-        i2c_transmitter[i]=i+0x80;
+    for(i = 0; i < 16; i++) {
+        i2c_transmitter[i] = i + 0x80;
     }
 
     /* wait until I2C bus is idle */
@@ -88,9 +88,9 @@ int main(void)
     /* clear ADDSEND bit */
     i2c_flag_clear(I2C0, I2C_FLAG_ADDSEND);
     i2c_flag_clear(I2C1, I2C_FLAG_ADDSEND);
-    for(i=0;i<16;i++){
+    for(i = 0; i < 16; i++) {
         /* send a data byte */
-        i2c_data_transmit(I2C0,i2c_transmitter[i]);
+        i2c_data_transmit(I2C0, i2c_transmitter[i]);
         /* wait until the transmission data register is empty*/
         while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
         /* wait until the RBNE bit is set */
@@ -100,18 +100,18 @@ int main(void)
     }
     /* send a stop condition to I2C bus*/
     i2c_stop_on_bus(I2C0);
-    /* wait until stop condition generate */ 
-    while(I2C_CTL0(I2C0)&0x0200);
+    /* wait until stop condition generate */
+    while(I2C_CTL0(I2C0) & 0x0200);
     while(!i2c_flag_get(I2C1, I2C_FLAG_STPDET));
     /* clear the STPDET bit */
     i2c_enable(I2C1);
-    state = memory_compare(i2c_transmitter, i2c_receiver,16);
-    if(SUCCESS == state){
+    state = memory_compare(i2c_transmitter, i2c_receiver, 16);
+    if(SUCCESS == state) {
         gd_eval_led_on(LED2);
         gd_eval_led_on(LED3);
-    }else{
+    } else {
         gd_eval_led_off(LED2);
-        gd_eval_led_off(LED3); 
+        gd_eval_led_off(LED3);
     }
     while(1);
 }
@@ -124,10 +124,10 @@ int main(void)
     \param[out] none
     \retval     ErrStatus : ERROR or SUCCESS
 */
-ErrStatus memory_compare(uint8_t* src, uint8_t* dst, uint16_t length) 
+ErrStatus memory_compare(uint8_t *src, uint8_t *dst, uint16_t length)
 {
-    while(length--){
-        if(*src++ != *dst++){
+    while(length--) {
+        if(*src++ != *dst++) {
             return ERROR;
         }
     }

@@ -11,27 +11,27 @@
 /*
     Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
-    Redistribution and use in source and binary forms, with or without modification, 
+    Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, this 
+    1. Redistributions of source code must retain the above copyright notice, this
        list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice, 
-       this list of conditions and the following disclaimer in the documentation 
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
        and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors 
-       may be used to endorse or promote products derived from this software without 
+    3. Neither the name of the copyright holder nor the names of its contributors
+       may be used to endorse or promote products derived from this software without
        specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 */
 
@@ -57,19 +57,19 @@ void i2c_config(void);
 */
 int main(void)
 {
-    int i;
-    
-    /* RCU config */
+    uint8_t i;
+
+    /* cofigure RCU */
     rcu_config();
-    /* GPIO config */
+    /* cofigure GPIO */
     gpio_config();
-    /* I2C config */
+    /* cofigure I2C */
     i2c_config();
 
-    for(i=0; i<16; i++){
-        i2c_transmitter[i] = i+0x80;
+    for(i = 0; i < 16; i++) {
+        i2c_transmitter[i] = i + 0x80;
     }
-    
+
 #if I2C_10BIT_ADDRESS
     /* wait until ADDSEND bit is set */
     while(!i2c_flag_get(I2C0, I2C_FLAG_ADDSEND));
@@ -88,7 +88,7 @@ int main(void)
     /* wait until the transmission data register is empty */
     while(!i2c_flag_get(I2C0, I2C_FLAG_TBE));
 
-    for(i=0;i<16;i++){
+    for(i = 0; i < 16; i++) {
         /* send a data byte */
         i2c_data_transmit(I2C0, i2c_transmitter[i]);
         /* wait until the transmission data register is empty */
@@ -99,7 +99,7 @@ int main(void)
     /* clear the bit of AERR */
     i2c_flag_clear(I2C0, I2C_FLAG_AERR);
 
-    while(1){
+    while(1) {
     }
 }
 
@@ -138,9 +138,9 @@ void gpio_config(void)
 */
 void i2c_config(void)
 {
-    /* I2C clock configure */
+    /* cofigure I2C clock */
     i2c_clock_config(I2C0, 400000, I2C_DTCY_2);
-    /* I2C address configure */
+    /* cofigure I2C address */
 #if I2C_10BIT_ADDRESS
     i2c_mode_addr_config(I2C0, I2C_I2CMODE_ENABLE, I2C_ADDFORMAT_10BITS, I2C0_OWN_ADDRESS10);
 #else

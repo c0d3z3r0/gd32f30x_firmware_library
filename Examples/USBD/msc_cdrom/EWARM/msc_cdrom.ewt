@@ -1139,9 +1139,6 @@
       <name>$PROJ_DIR$\..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_core.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_data.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\..\Firmware\GD32F30x_usbd_library\class\device\msc\Source\usbd_msc_scsi.c</name>
     </file>
   </group>

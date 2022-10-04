@@ -37,8 +37,16 @@ OF SUCH DAMAGE.
 
   This example is based on the GD32307C-EVAL-V1.1 board, it shows master send data and 
 slave receive data use intterupt mode.
-  After the communicate is complete,if receive data equal to send data,led2 turn 
-on. If not, led2 turn off.
+
+  1.Modify files: main.c and gd32f30x_it.c, choose to disable CRC function.
+  #define SPI_CRC_ENABLE       0
+  After the communication is completed, if the data received equal to the data sent, LED2
+turn on, and if not, LED2 turn off.
+
+  2.Modify files: main.c and gd32f30x_it.c, choose to enable CRC function.
+  #define SPI_CRC_ENABLE       1
+  After the communication is completed, if the CRC checking is passed, LED2 turn on,
+and if not, LED2 turn off.
 
   Connect SPI0 NSS  PIN(PA3) to SPI2 NSS  PIN(PA4).
   Connect SPI0 SCK  PIN(PA5) to SPI2 SCK  PIN(PC10).

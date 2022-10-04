@@ -39,6 +39,18 @@ OF SUCH DAMAGE.
 communication use polling mode.After the communicate is complete,if receive data equal 
 to send data, led2 and led3 turn on. If not, led2 and led3 turn off.
 
+  1.Modify file: Examples/SPI/SPI_master_slave_fullduplex_polling/main.c, choose to disable
+CRC function.
+  #define SPI_CRC_ENABLE       0
+  After the communication is completed, if the data received equal to the data sent, LED1
+and LED2 turn on, and if not, LED3 and LED2 turn off.
+
+  2.Modify file: Examples/SPI/SPI_master_slave_fullduplex_polling/main.c, choose to enable
+CRC function.
+  #define SPI_CRC_ENABLE       1
+  After the communication is completed, if the CRC checking is passed, LED1 and LED2 turn
+on, and if not, LED3 and LED2 turn off.
+
   Connect SPI0 NSS  PIN(PA3) to SPI2 NSS  PIN(PA4).
   Connect SPI0 SCK  PIN(PA5) to SPI2 SCK  PIN(PC10).
   Connect SPI0 MISO PIN(PA6) to SPI2 MISO PIN(PC11).

@@ -1058,9 +1058,6 @@
   <group>
     <name>Appliction</name>
     <file>
-      <name>$PROJ_DIR$\..\src\gd32f303c_audio_codec.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\src\gd32f30x_it.c</name>
     </file>
     <file>
@@ -1084,6 +1081,9 @@
   </group>
   <group>
     <name>GD32F30x_EVAL</name>
+    <file>
+      <name>$PROJ_DIR$\..\src\gd32f303c_audio_codec.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\Utilities\gd32f303e_eval.c</name>
     </file>

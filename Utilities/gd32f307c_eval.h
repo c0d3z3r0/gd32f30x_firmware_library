@@ -77,9 +77,9 @@ typedef enum
 #define LED3_GPIO_PORT                   GPIOC
 #define LED3_GPIO_CLK                    RCU_GPIOC
   
-#define LED4_PIN                         GPIO_PIN_2
-#define LED4_GPIO_PORT                   GPIOF
-#define LED4_GPIO_CLK                    RCU_GPIOF
+#define LED4_PIN                         GPIO_PIN_0
+#define LED4_GPIO_PORT                   GPIOE
+#define LED4_GPIO_CLK                    RCU_GPIOE
   
 #define LED5_PIN                         GPIO_PIN_1
 #define LED5_GPIO_PORT                   GPIOE

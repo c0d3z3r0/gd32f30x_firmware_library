@@ -36,8 +36,18 @@ OF SUCH DAMAGE.
 */
 
   This example is based on the GD32307C-EVAL-V1.1 board, it shows SPI0 and SPI2 fullduplex 
-communication use dma mode. After the communicate is complete,if receive data equal to
-send data,led2 and led3 turn on. If not, led2 and led3 turn off.
+communication use dma mode. 
+
+  1.Modify file:main.c, choose to disable CRC function.
+  #define SPI_CRC_ENABLE       0
+  After the communication is completed, if the data received equal to the data sent, LED3
+and LED2 turn on, and if not, LED3 and LED2 turn off.
+
+  2.Modify file: main.c, choose to enable CRC function.
+  #define SPI_CRC_ENABLE       1
+  After the communication is completed, if the CRC checking is passed, LED3 and LED2 turn
+on, and if not, LED3 and LED2 turn off.
+
 
   Connect SPI0 NSS  PIN(PA3) to SPI2 SCK  PIN(PA4).
   Connect SPI0 SCK  PIN(PA5) to SPI2 SCK  PIN(PC10).

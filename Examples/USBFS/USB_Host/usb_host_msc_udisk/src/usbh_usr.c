@@ -3,10 +3,11 @@
     \brief   user application layer for USBFS host-mode MSC class operation
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -50,7 +51,7 @@ uint8_t line_idx;
 uint8_t usbh_usr_application_state = USBH_USR_FS_INIT;
 
 const uint8_t MSG_HOST_HEADER[]      = "USBFS MSC Host";
-const uint8_t MSG_HOST_FOOTER[]      = "USB Host Library v2.0.0";
+const uint8_t MSG_HOST_FOOTER[]      = "USB Host Library v3.0.0";
 
 /*  points to the DEVICE_PROP structure of current device */
 usbh_user_cb usr_cb =
@@ -300,12 +301,12 @@ void usbh_user_device_not_supported(void)
 */
 usbh_user_status usbh_user_userinput(void)
 {
-    usbh_user_status usbh_usr_status = USBH_USER_NO_RESP;
+    usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
     /*key B3 is in polling mode to detect user action */
 
     if (RESET == gd_eval_key_state_get(KEY_USER)) {
-        usbh_usr_status = USBH_USER_RESP_OK;
+        usbh_usr_status = USR_IN_RESP_OK;
     }
 
     return usbh_usr_status;

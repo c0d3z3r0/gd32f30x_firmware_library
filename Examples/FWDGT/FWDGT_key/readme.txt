@@ -40,12 +40,22 @@ FWDGT counter at regulate period using the EXTI interrupt. The FWDGT timeout
 is set to 1.6s (the timeout may varies due to IRC40K frequency dispersion).
  
   An EXTI is connected to a specific GPIO pin and configured to generate an interrupt
-on its falling edge: when the EXTI Line interrupt is triggered (by pressing the Tamper
-Key on the board), the corresponding interrupt is served. In the ISR, FWDGT 
-counter is reloaded). As a result, when the FWDGT counter is reloaded, which prevents 
-any FWDGT reset,  LED2 or LED3 remain illuminated.
-  
+on its falling edge: when the EXTI Line interrupt is triggered (by pressing the tamper
+key on the board), the corresponding interrupt is served. In the ISR, FWDGT counter is 
+reloaded). 
+
   If the EXTI Line interrupt does not occur, the FWDGT counter is not reloaded before
-the FWDGT counter reaches 00h, and the FWDGT reset. If the FWDGT reset is generated, 
-LED2 and LED3 are turned off with the system reset. FWDGTRST flag is set by hardware,
-and then LED3 is turned on.
+the FWDGT counter reaches 00h, and the FWDGT reset. 
+
+  There are three operation methods as follow:
+  1.After the download is completed and the system is powered on, LED2 flashes once and 
+then LED3 starts flashing.
+
+  2.After the download is completed and the system is powered on, start to press the tamper 
+button in quick succession, then LED2 is always on, and stop pressing the tamper button in
+quick succession and LED3 starts to flash.
+
+  3.After the download is completed and the system is powered on, LED2 flashes once and then 
+LED3 starts flashing. At this time, after pressing the tamper button in rapid succession, 
+LED3 is always on, and after stopping the rapid and continuous pressing of the tamper button,
+LED3 starts flashing

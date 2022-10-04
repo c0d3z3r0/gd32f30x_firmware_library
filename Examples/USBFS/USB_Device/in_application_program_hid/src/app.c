@@ -3,10 +3,11 @@
     \brief   USB main routine for HID device(USB keyboard)
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,10 +36,14 @@ OF SUCH DAMAGE.
 #include "drv_usb_hw.h"
 #include "usb_iap_core.h"
 
+/* SRAM start address and SRAM end address */
+#define SRAM_BASE_ADDR      SRAM_BASE
+#define SRAM_END_ADDR       (SRAM_BASE + GET_BITS(REG32(0x1FFFF7E0U), 16U, 31U) * 1024U)
+
 usb_core_driver usb_iap_dev;
 
 /*!
-    \brief      main routine will construct a USB keyboard
+    \brief      main routine will construct a USB HID IAP device
     \param[in]  none
     \param[out] none
     \retval     none
@@ -53,7 +58,7 @@ int main(void)
 
     if (0U != gd_eval_key_state_get(KEY_TAMPER)) {
         /* test if user code is programmed starting from address 0x8008000 */
-        if (0x20000000U == ((*(__IO uint32_t*)APP_LOADED_ADDR) & 0x2FFE0000U)) {
+        if((REG32(APP_LOADED_ADDR) >= SRAM_BASE_ADDR) && (REG32(APP_LOADED_ADDR) < SRAM_END_ADDR)){
             app_address = *(__IO uint32_t*) (APP_LOADED_ADDR + 4U);
             application = (app_func) app_address;
 
@@ -73,20 +78,9 @@ int main(void)
     usbd_init(&usb_iap_dev, USB_CORE_ENUM_FS, &iap_desc, &iap_class);
 
     usb_intr_config();
-    
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (RESET == ctc_flag_get(CTC_FLAG_CKOK)) {
-    }
-#endif /* USE_IRC48M */
 
     /* check if USB device is enumerated successfully */
-    while (usb_iap_dev.dev.cur_status != USBD_CONFIGURED) {
+    while (USBD_CONFIGURED != usb_iap_dev.dev.cur_status) {
     }
 
     while (1) {

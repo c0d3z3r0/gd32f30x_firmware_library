@@ -3,10 +3,11 @@
     \brief   standard HID keyboard interface driver
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -91,13 +92,13 @@ static uint8_t key_state (void)
     }
 
     /* have pressed user key */
-#ifdef GD32F30X_HD
-    if (!gd_eval_key_state_get(KEY_USER1)) {
-#else
-    if (!gd_eval_key_state_get(KEY_USER)) {
-#endif
-        return CHAR_C;
-    }
+//#ifdef GD32F30X_HD
+//    if (!gd_eval_key_state_get(KEY_USER1)) {
+//#else
+//    if (!gd_eval_key_state_get(KEY_USER)) {
+//#endif
+//        return CHAR_C;
+//    }
 
     /* no pressed any key */
     return 0U;

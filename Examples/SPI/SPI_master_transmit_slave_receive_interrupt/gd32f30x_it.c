@@ -37,7 +37,9 @@ OF SUCH DAMAGE.
 
 #include "gd32f30x_it.h"
 
-#define arraysize         10
+#define SPI_CRC_ENABLE           1
+#define ARRAYSIZE                10
+
 extern uint8_t spi0_send_array[ ];
 extern uint8_t spi2_receive_array[ ];
 extern __IO uint32_t send_n, receive_n;
@@ -150,10 +152,12 @@ void SPI0_IRQHandler(void)
 {
     if(RESET != spi_i2s_interrupt_flag_get(SPI0, SPI_I2S_INT_FLAG_TBE)){
         /* send data */
-        while(RESET == spi_i2s_flag_get(SPI0, SPI_FLAG_TBE));
         spi_i2s_data_transmit(SPI0, spi0_send_array[send_n++]);
-
-        if(arraysize == send_n){
+        if(ARRAYSIZE == send_n) {
+#if SPI_CRC_ENABLE
+            /* send the CRC value */
+            spi_crc_next(SPI0);
+#endif /* enable CRC function */
             spi_i2s_interrupt_disable(SPI0, SPI_I2S_INT_TBE);
         }
     }
@@ -167,7 +171,14 @@ void SPI0_IRQHandler(void)
 */
 void SPI2_IRQHandler(void)
 {
-    /* received data */
-    if(RESET != spi_i2s_interrupt_flag_get(SPI2,SPI_I2S_INT_FLAG_RBNE))
+    /* receive data */
+    if(RESET != spi_i2s_interrupt_flag_get(SPI2,SPI_I2S_INT_FLAG_RBNE)) {
         spi2_receive_array[receive_n++] = spi_i2s_data_receive(SPI2);
+#if SPI_CRC_ENABLE
+        if((ARRAYSIZE - 1) == receive_n) {
+            /* receive the CRC value */
+            spi_crc_next(SPI2);
+        }
+#endif /* enable CRC function */
+    }
 }

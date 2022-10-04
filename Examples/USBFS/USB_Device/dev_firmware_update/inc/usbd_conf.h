@@ -3,10 +3,11 @@
     \brief   the header file of USB device configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -36,11 +37,20 @@ OF SUCH DAMAGE.
 #define __USBD_CONF_H
 
 #include "usb_conf.h"
+#include "dfu_mem.h"
+#include "exmc_nandflash.h"
+#include "nor_flash_if.h"
+#include "nand_flash_if.h"
+#include "inter_flash_if.h"
 
 #define USBD_CFG_MAX_NUM              1U
 #define USBD_ITF_MAX_NUM              1U
 #define USB_STR_DESC_MAX_SIZE         64U
 
+#define DFU_MAX_ALT_ITF_NUM           3
+#define STR_IDX_ALT_ITF0              5
+#define STR_IDX_ALT_ITF1              6
+#define STR_IDX_ALT_ITF2              7
 #define USBD_DFU_INTERFACE            0U
 
 /* USB feature -- Self Powered */
@@ -52,7 +62,7 @@ OF SUCH DAMAGE.
 //#define USBD_DYNAMIC_DESCRIPTOR_CHANGE_ENABLED
 
 /* Maximum number of supported media (Flash) */
-#define MAX_USED_MEMORY_MEDIA        1U
+#define MAX_USED_MEMORY_MEDIA        3U
 
 #define USB_STRING_COUNT             6U
 

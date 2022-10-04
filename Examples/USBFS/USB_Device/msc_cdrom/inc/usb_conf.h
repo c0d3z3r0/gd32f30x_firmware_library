@@ -3,10 +3,11 @@
     \brief   USB core driver basic configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -47,8 +48,6 @@ OF SUCH DAMAGE.
  *  The USE_EMBEDDED_PHY symbol is defined in the project compiler preprocessor
  *  when FS core is used.
 *******************************************************************************/
-
-//#define USE_IRC48M
 
 #ifdef USE_USB_FS
     #define USB_FS_CORE
@@ -118,11 +117,7 @@ OF SUCH DAMAGE.
 #define __ALIGN_END
 
 /* __packed keyword used to decrease the data type alignment to 1-byte */
-#if defined (__CC_ARM)         /* ARM Compiler */
-    #define __packed __packed
-#elif defined (__ICCARM__)     /* IAR Compiler */
-    #define __packed __packed
-#elif defined (__GNUC__)       /* GNU Compiler */
+#if defined (__GNUC__)       /* GNU Compiler */
     #define __packed __attribute__ ((__packed__))
 #elif defined (__TASKING__)    /* TASKING Compiler */
     #define __packed __unaligned

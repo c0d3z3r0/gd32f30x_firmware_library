@@ -3,10 +3,11 @@
     \brief   some user routines
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -34,8 +35,7 @@ OF SUCH DAMAGE.
 
 #include "lcd_log.h"
 #include "usbh_usr.h"
-#include "usbh_hid_mouse.h"
-#include "usbh_hid_keybd.h"
+#include "usbh_standard_hid.h"
 #include "usb_lcd_conf.h"
 #include "drv_usb_hw.h"
 #include <string.h>
@@ -50,7 +50,7 @@ uint16_t KeybrdCharXpos = 0U;
 uint16_t KeybrdCharYpos = 0U;
 
 const uint8_t MSG_HOST_HEADER[]        = "USB OTG FS HID Host";
-const uint8_t MSG_HOST_FOOTER[]        = "USB Host Library v2.1.0";
+const uint8_t MSG_HOST_FOOTER[]        = "USB Host Library v3.0.0";
 
 /* Points to the DEVICE_PROP structure of current device */
 usbh_user_cb usr_cb =
@@ -302,7 +302,7 @@ void usbh_user_device_not_supported(void)
 */
 usbh_user_status usbh_user_userinput(void)
 {
-    usbh_user_status usbh_usr_status = USBH_USER_NO_RESP;
+    usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
 #if USB_LOW_POWER
 
@@ -324,7 +324,7 @@ usbh_user_status usbh_user_userinput(void)
 
     /*Key B3 is in polling mode to detect user action */
     if(RESET == gd_eval_key_state_get(KEY_USER)){
-        usbh_usr_status = USBH_USER_RESP_OK;
+        usbh_usr_status = USR_IN_RESP_OK;
     }
 
     return usbh_usr_status;
@@ -342,12 +342,12 @@ void usbh_user_over_current_detected (void)
 }
 
 /*!
-    \brief      init mouse window
+    \brief      initialize mouse window
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void USR_MOUSE_Init (void)
+void usr_mouse_init (void)
 {
     LCD_UsrLog("> HID Demo Device : Mouse.\n");
 
@@ -385,7 +385,7 @@ void USR_MOUSE_Init (void)
     \param[out] none
     \retval     none
 */
-void USR_MOUSE_ProcessData (hid_mouse_info *data)
+void usr_mouse_process_data (hid_mouse_info *data)
 {
     if ((0U != data->x ) && (0U != data->y)) {
         HID_MOUSE_UpdatePosition(data->x, data->y);
@@ -401,12 +401,12 @@ void USR_MOUSE_ProcessData (hid_mouse_info *data)
 }
 
 /*!
-    \brief      init keyboard window
+    \brief      initialize keyboard window
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void  USR_KEYBRD_Init (void)
+void  usr_keyboard_init (void)
 {
     LCD_UsrLog("> HID Demo Device : Keyboard.\n");
     LCD_UsrLog("> Use Keyboard to tape characters: \n");
@@ -431,7 +431,7 @@ void  USR_KEYBRD_Init (void)
     \param[out] none
     \retval     none
 */
-void USR_KEYBRD_ProcessData (uint8_t data)
+void usr_keybrd_process_data (uint8_t data)
 {
     if('\n' == data){
         KeybrdCharYpos = KYBRD_FIRST_COLUMN;

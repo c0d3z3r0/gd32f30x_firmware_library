@@ -11,27 +11,27 @@
 /*
     Copyright (c) 2020, GigaDevice Semiconductor Inc.
 
-    Redistribution and use in source and binary forms, with or without modification, 
+    Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, this 
+    1. Redistributions of source code must retain the above copyright notice, this
        list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice, 
-       this list of conditions and the following disclaimer in the documentation 
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
        and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors 
-       may be used to endorse or promote products derived from this software without 
+    3. Neither the name of the copyright holder nor the names of its contributors
+       may be used to endorse or promote products derived from this software without
        specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 */
 
@@ -59,14 +59,14 @@ int main(void)
 {
     uint8_t i;
 #if I2C_10BIT_ADDRESS
-    uint8_t slave10_first_byte,slave10_second_byte;
+    uint8_t slave10_first_byte, slave10_second_byte;
 #endif
-    
-    /* RCU config */
+
+    /* configure RCU  */
     rcu_config();
-    /* GPIO config */
+    /* configure GPIO */
     gpio_config();
-    /* I2C config */
+    /* configure I2C */
     i2c_config();
 
     /* wait until I2C bus is idle */
@@ -75,9 +75,9 @@ int main(void)
     i2c_start_on_bus(I2C0);
     /* wait until SBSEND bit is set */
     while(!i2c_flag_get(I2C0, I2C_FLAG_SBSEND));
-    
+
 #if I2C_10BIT_ADDRESS
-    slave10_first_byte = (0xF0) | (uint8_t)((I2C0_SLAVE_ADDRESS10 & 0x0300)>>7);
+    slave10_first_byte = (0xF0) | (uint8_t)((I2C0_SLAVE_ADDRESS10 & 0x0300) >> 7);
     /* send slave address first byte to I2C bus */
     i2c_master_addressing(I2C0, slave10_first_byte, I2C_TRANSMITTER);
     /* wait until ADD10SEND bit is set */
@@ -104,9 +104,9 @@ int main(void)
     while(!i2c_flag_get(I2C0, I2C_FLAG_ADDSEND));
     /* clear ADDSEND bit */
     i2c_flag_clear(I2C0, I2C_FLAG_ADDSEND);
-    
-    for(i=0; i<16; i++){
-        if(13 == i){
+
+    for(i = 0; i < 16; i++) {
+        if(13 == i) {
             /* wait until the second last data byte is received into the shift register */
             while(!i2c_flag_get(I2C0, I2C_FLAG_BTC));
             /* disable acknowledge */
@@ -120,11 +120,11 @@ int main(void)
     /* send a stop condition to I2C bus */
     i2c_stop_on_bus(I2C0);
     /* wait until stop condition generate */
-    while(I2C_CTL0(I2C0)&0x0200);
+    while(I2C_CTL0(I2C0) & 0x0200);
     /* enable acknowledge */
     i2c_ack_config(I2C0, I2C_ACK_ENABLE);
 
-    while(1){
+    while(1) {
     }
 }
 
@@ -163,9 +163,9 @@ void gpio_config(void)
 */
 void i2c_config(void)
 {
-    /* I2C clock configure */
+    /* configure I2C clock */
     i2c_clock_config(I2C0, 400000, I2C_DTCY_2);
-    /* I2C address configure */
+    /* configure I2C address */
     i2c_mode_addr_config(I2C0, I2C_I2CMODE_ENABLE, I2C_ADDFORMAT_7BITS, I2C0_OWN_ADDRESS7);
     /* enable I2C0 */
     i2c_enable(I2C0);

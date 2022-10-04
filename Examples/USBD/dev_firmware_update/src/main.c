@@ -3,10 +3,11 @@
     \brief   USB device main routine
 
     \version 2020-08-01, V3.0.0, firmware for GD32F30x
+    \version 2022-06-10, V3.1.0, firmware for GD32F30x
 */
 
 /*
-    Copyright (c) 2020, GigaDevice Semiconductor Inc.
+    Copyright (c) 2022, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,6 +36,10 @@ OF SUCH DAMAGE.
 #include "dfu_core.h"
 #include "usbd_hw.h"
 
+/* SRAM start address and SRAM end address */
+#define SRAM_BASE_ADDR      SRAM_BASE
+#define SRAM_END_ADDR       (SRAM_BASE + GET_BITS(REG32(0x1FFFF7E0U), 16U, 31U) * 1024U)
+
 usb_dev usb_dfu;
 
 /*!
@@ -54,7 +59,7 @@ int main(void)
     /* tamper key must be pressed on GD32-EVAL when power on */
     if(0U != gd_eval_key_state_get(KEY_TAMPER)){
         /* test if user code is programmed starting from address 0x08008000 */
-        if (0x20000000U == ((*(__IO uint32_t*)APP_LOADED_ADDR) & 0x2FFE0000U)) {
+        if((REG32(APP_LOADED_ADDR) >= SRAM_BASE_ADDR) && (REG32(APP_LOADED_ADDR) < SRAM_END_ADDR)){
             app_addr = *(__IO uint32_t*) (APP_LOADED_ADDR + 4U);
             application = (app_func) app_addr;
 
